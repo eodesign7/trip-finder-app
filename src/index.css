@@ -7,6 +7,8 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  padding: 0;
+  margin: 0;
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -51,6 +53,10 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --omio-blue: #213547;
+  --omio-light: #f5f7fa;
+  --omio-red: #ff5b5b;
+  --omio-white: #fff;
 }
 
 a {
@@ -63,6 +69,7 @@ a:hover {
 }
 
 body {
+  padding: 0;
   margin: 0;
   display: flex;
   place-items: center;

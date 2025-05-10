@@ -9,15 +9,15 @@
 ---
 
 ## 🔹 Fáza 1 – Inicializácia a UI
-- [ ] Vytvoriť React + Vite projekt s TypeScript
-- [ ] Vytvoriť komponentu `TripForm`
-  - [ ] Input: `odkiaľ`, `kam`
-  - [ ] `dátum`, `čas`
-  - [ ] `počet pasažierov`
-- [ ] Validácia formulára
+- [X] Vytvoriť React + Vite projekt s TypeScript
+- [X ] Vytvoriť komponentu `TripForm`
+  - [X] Input: `odkiaľ`, `kam`
+  - [X] `dátum`, `čas`
+  - [X] `počet pasažierov`
+- [X] Validácia formulára
 - [ ] OnSubmit → call `POST /trip/search` (axios)
-- [ ] Zobrazenie výsledkov tripov
-- [ ] Vytvoriť komponentu `LogStream` na zobrazenie logov (z WebSocketu)
+- [X] Zobrazenie výsledkov tripov
+- [X] Vytvoriť komponentu `LogStream` na zobrazenie logov (z WebSocketu)
 
 ---
 
