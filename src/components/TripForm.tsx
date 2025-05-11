@@ -44,21 +44,11 @@ export default function TripForm() {
   const [children, setChildren] = useState(0);
   const [errors, setErrors] = useState<{ [k: string]: string }>({});
   const [travelerOpen, setTravelerOpen] = useState(false);
-  const [logs, setLogs] = useState<string[]>([]);
 
-  const simulateLogs = () => {
-    setLogs([
-      "✅ Request initiated",
-      "🔄 Searching for train connections...",
-      "🔄 Searching for bus connections...",
-      "✅ Results ready!",
-    ]);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
-    setLogs([]);
+
     const result = tripFormSchema.safeParse({
       from,
       to,
@@ -66,6 +56,7 @@ export default function TripForm() {
       adults,
       children,
     });
+
     if (!result.success) {
       const fieldErrors: { [k: string]: string } = {};
       result.error.errors.forEach((err) => {
@@ -74,10 +65,22 @@ export default function TripForm() {
       setErrors(fieldErrors);
       return;
     }
-    // Simulate logs
-    simulateLogs();
-    // Success: call API or further logic here
-    console.log({ from, to, date, adults, children });
+
+    try {
+      await fetch("http://localhost:3001/trip/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from,
+          to,
+          date,
+          passengers: Number(adults) + Number(children),
+        }),
+      });
+      // Logy sa zobrazia cez WebSocket/LogPanel
+    } catch {
+      // Môžeš pridať alert alebo toast pre usera
+    }
   };
 
   // MOCK trip data for demo
@@ -280,7 +283,7 @@ export default function TripForm() {
           Search
         </Button>
       </form>
-      <LogPanel logs={logs} />
+      <LogPanel />
       <TripResults trips={mockTrips} />
     </div>
   );

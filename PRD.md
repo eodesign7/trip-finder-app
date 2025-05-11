@@ -1,3 +1,6 @@
+
+<!-- cSpell: disable -->
+
 # 🛠️ Trip Aggregator Demo App – PRD
 
 ## 🎯 Cieľ projektu

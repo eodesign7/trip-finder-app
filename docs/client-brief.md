@@ -1,3 +1,6 @@
+
+<!-- cSpell: disable -->
+
 # 📋 Klientsky Brief – Backend Engineer pre Omio
 
 ## 🌍 Vízia firmy
