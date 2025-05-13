@@ -1,7 +1,10 @@
 import "./App.css";
 import TripForm from "@/components/TripForm";
+import TripResults from "@/components/TripResults";
+import { useState } from "react";
 
-function App() {
+export default function App() {
+  const [trips, setTrips] = useState<TripOption[]>([]);
   return (
     <main className="min-h-screen p-0 m-0">
       {/* Hero image */}
@@ -21,12 +24,10 @@ function App() {
           <span className="text-[var(--omio-red)]">.</span>Trips
         </h1>
         <div className="w-full flex justify-center">
-          
-          <TripForm />
+          <TripForm setTrips={setTrips} />
         </div>
+        <TripResults trips={trips} />
       </div>
     </main>
   );
 }
-
-export default App;

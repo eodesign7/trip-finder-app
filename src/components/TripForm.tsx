@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type Dispatch, type SetStateAction } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import LogPanel from "@/components/LogPanel";
-import TripResults from "@/components/TripResults";
 
 const tripFormSchema = z.object({
   from: z.string().min(2, "Enter at least 2 characters"),
@@ -22,21 +21,11 @@ const tripFormSchema = z.object({
   children: z.number().min(0, "Cannot be negative").max(10, "Max 10 children"),
 });
 
-type TripOption = {
-  provider: "train" | "bus";
-  segments: string[];
-  totalPrice: number;
-  totalDurationMinutes: number;
-  scoring?: number;
-  details?: {
-    segment: string;
-    departure: string;
-    arrival: string;
-    price: number;
-  }[];
+type TripFormProps = {
+  setTrips: Dispatch<SetStateAction<TripOption[]>>;
 };
 
-export default function TripForm() {
+export default function TripForm({ setTrips }: TripFormProps) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
@@ -48,6 +37,7 @@ export default function TripForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    console.log("[TripForm] Submit!", { from, to, date, adults, children });
 
     const result = tripFormSchema.safeParse({
       from,
@@ -63,50 +53,50 @@ export default function TripForm() {
         if (err.path[0]) fieldErrors[err.path[0]] = err.message;
       });
       setErrors(fieldErrors);
+      console.warn("[TripForm] Validation failed", fieldErrors);
       return;
     }
 
     try {
-      await fetch("http://localhost:3001/trip/search", {
+      const formattedDate = date ? format(date, "yyyy-MM-dd") : "";
+      const formattedTime = date ? format(date, "HH:mm") : "";
+
+      // Uloženie requestu do localStorage
+      const prevRequests = JSON.parse(
+        localStorage.getItem("tripRequests") || "[]"
+      );
+      const newRequest = {
+        from,
+        to,
+        date: formattedDate,
+        time: formattedTime,
+        timestamp: Date.now(),
+      };
+      localStorage.setItem(
+        "tripRequests",
+        JSON.stringify([...prevRequests, newRequest])
+      );
+
+      const res = await fetch("http://localhost:3001/trip/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           from,
           to,
-          date,
+          date: formattedDate,
+          time: formattedTime,
           passengers: Number(adults) + Number(children),
         }),
       });
-      // Logy sa zobrazia cez WebSocket/LogPanel
-    } catch {
+
+      const data = await res.json();
+      console.log("[TripForm] Response from backend", data);
+      setTrips(data.data || []);
+    } catch (err) {
+      console.error("[TripForm] Error during fetch", err);
       // Môžeš pridať alert alebo toast pre usera
     }
   };
-
-  // MOCK trip data for demo
-  const mockTrips: TripOption[] = [
-    {
-      provider: "train",
-      segments: ["Bratislava", "Vienna"],
-      totalPrice: 19.9,
-      totalDurationMinutes: 75,
-      scoring: 90,
-    },
-    {
-      provider: "bus",
-      segments: ["Bratislava", "Vienna"],
-      totalPrice: 12.5,
-      totalDurationMinutes: 90,
-      scoring: 80,
-    },
-    {
-      provider: "train",
-      segments: ["Bratislava", "Gyor", "Vienna"],
-      totalPrice: 15.0,
-      totalDurationMinutes: 120,
-      scoring: 70,
-    },
-  ];
 
   return (
     <div className="min-w-full h-full p-4 bg-none">
@@ -284,7 +274,6 @@ export default function TripForm() {
         </Button>
       </form>
       <LogPanel />
-      <TripResults trips={mockTrips} />
     </div>
   );
 }

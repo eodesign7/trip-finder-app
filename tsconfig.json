@@ -4,12 +4,13 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
-  "recompilerOptions": {
+  "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
     },
     "forceConsistentCasingInFileNames": true,
     "strict": true
-  }
+  },
+  "include": ["src", "server", "types.d.ts"]
 }

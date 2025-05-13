@@ -5,11 +5,11 @@
 ### 📄 `docs/TASKS.md`
 
 ```md
-# ✅ TASKS – Trip Aggregator Demo App
+# ✅ TASKS – .Trips - Trip Aggregator Demo App
 
 ---
 
-## 🔹 Fáza 1 – Inicializácia a UI
+## 🔹 Fáza 1 – Inicializácia a UI | 10.5.2025
 
 - [x] Vytvoriť React + Vite projekt s TypeScript
 - [X ] Vytvoriť komponentu `TripForm`
@@ -23,7 +23,7 @@
 
 ---
 
-## 🔹 Fáza 2 – Backend + WebSocket
+## 🔹 Fáza 2 – Backend + WebSocket | 11.5.2025
 
 - [x] Inicializovať Node.js + Express + TS projekt (`tsconfig.json`, `nodemon`)
 - [x] Endpoint: `POST /trip/search`
@@ -39,17 +39,39 @@
 - [x] Validácia vstupu pomocou Zod (typovo bezpečná, rozšíriteľná)
 - [x] Logovanie všetkých správ aj do backend konzoly (pre debugging a audit)
 - [x] Detailné logy s obsahom tripu (odkiaľ, kam, dátum, počet pasažierov)
-- [x] Riešenie CORS (umožnenie komunikácie FE ↔ BE na rôznych portoch)
+- [x] Riešenie CORS (umožnenie komunikácie FE ↔ BE na rôznych portoch FE:5173, BE: 3001 )
 - [x] Bezpečné spracovanie WebSocket správ na FE (Blob, string)
 
 ---
 
-## 🔹 Fáza 3 – Integrácia verejných API
+## 🔹 Fáza 3 – Integrácia dostupných API, Webscrapping-u | 13.5.2025
 
-- [ ] Napojenie na **Navitia API** (vlak/bus)
-- [ ] Prípadne fallback na TransportAPI alebo Trafiklab
-- [ ] Transformácia výsledkov do jednotného formátu `TripOption[]`
-- [ ] Zabezpečiť, že pre vlaky sa berú len mestá s vlakovou stanicou
+- [x] Endpoint: Google Directions API (transit)
+- [x] Zistenie providera z odpovede
+- [ ] Paralelný scraping cp.sk (puppeteer/cheerio)
+- [ ] Ak provider má API, použiť ho, inak scraping
+- [ ] Ak nič, fallback na fakePrice
+- [ ] Počet pasažierov – workaround
+- [x] Zjednotenie výsledkov do `TripOption[]`
+- [x] Rate limiting na serveri
+
+### 🕵️‍♂️ Research-checklist
+
+- [ ] Zistiť, aké API majú slovenskí provideri (ZSSK, RegioJet, Slovak Lines, FlixBus)
+- [ ] Zistiť, či je možné získať ceny a dostupnosť pre viac pasažierov cez cp.sk alebo priamo u providerov
+- [ ] Zistiť, aké sú limity a podmienky použitia Google Directions API pre transit
+- [ ] Zistiť, či existujú unofficial endpointy alebo verejné datasety pre slovenskú dopravu
+- [ ] Zistiť, aké sú možnosti zadania počtu pasažierov pri scrape cp.sk a providerov
+
+### 🚦 Google Transit + Ceny (custom flow)
+
+- [ ] User zadá ➜ Odkiaľ/Kam, Dátum/Čas, Počet pasažierov
+- [ ] Backend ➜ Google Directions API (`mode=transit`)
+- [ ] Z výsledku zistiť provider: "FlixBus", "ZSSK", "RegioJet"
+- [ ] Ak chceš cenu:
+  - [ ] Zavolať špecifické API (napr. FlixBus Booking API, RegioJet unofficial)
+  - [ ] Alebo fallback na "Odhad ceny" podľa vzdialenosti + provider typ
+- [ ] Scoring, total time, prestupy, zobrazenie na FE
 
 ---
 
@@ -59,6 +81,7 @@
 - [ ] Vykresliť výber spojení (karta pre každý trip)
 - [ ] Pridať skórovanie výsledkov (voliteľne cez OpenAI)
 - [ ] Odkomunikovať stav frontend ↔ backend cez logy
+- [ ] Získať ceny podľa poskytovateľa (napr. ZSSK, RegioJet) – zamerať sa len na Slovensko
 
 ---
 
@@ -81,7 +104,7 @@
 ## API RESOURCE
 
 API Zameranie URL
-Navitia - Bus+Train EU - https://www.navitia.io/
+Navitia - Bus+Train EU - https://www.navitia.io/ - Nema Freemium - licencia 5,000 EUR/rocne
 
 ## Nice to Have - Enhancements
 
