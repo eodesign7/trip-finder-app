@@ -1,10 +1,32 @@
-type TripCardProps = {
+import React from "react";
+
+// import type { TripCardProps } from "types";
+
+const SEGMENT_ICONS: Record<string, string> = {
+  TRAIN: "🚄",
+  BUS: "🚌",
+  WALK: "🚶",
+  UNKNOWN: "❓",
+};
+
+// Voliteľné: špeciálne ikonky (wifi, bike, wheelchair...) podľa segmentu
+const SPECIAL_ICONS: Record<string, string> = {
+  wifi: "📶",
+  bike: "🚲",
+  wheelchair: "♿",
+};
+
+// Pomocná funkcia na formátovanie dátumu (napr. 17.5. so)
+function formatDate(dateStr?: string) {
+  if (!dateStr) return "?";
+  // Očakávam formát "17.5. so" alebo "17.5.2025"
+  return dateStr;
+}
+
+// Props podľa TripOption
+interface TripCardProps {
   from: { time: string; station: string; city: string };
-  to: { time: string; station: string; city: string };
   duration: number;
-  icon: string;
-  provider: { name: string; url: string };
-  line: string;
   segments: Array<{
     type?: string;
     from?: string;
@@ -12,69 +34,101 @@ type TripCardProps = {
     line?: string;
     provider?: string;
   }>;
-};
+  price?: number;
+  adults?: number;
+  children?: number;
+}
 
 export default function TripCard({
   from,
-  to,
   duration,
-  icon,
-  provider,
-  line,
   segments,
+  price,
+  adults,
+  children,
 }: TripCardProps) {
+  // Header info
+  const mainSegment =
+    segments.find((s) => s.type === "BUS" || s.type === "TRAIN") || segments[0];
+  const toStation =
+    segments.length > 0 ? segments[segments.length - 1].to : "?";
+  const line = mainSegment?.line || "?";
+  const provider = mainSegment?.provider || "?";
+  const icon = SEGMENT_ICONS[mainSegment?.type || "UNKNOWN"] || "❓";
+  const transferCount =
+    segments.filter((s) => s.type === "BUS" || s.type === "TRAIN").length - 1;
+  const isDirect = transferCount === 0;
+  const priceStr = price !== undefined ? `${price.toFixed(2)} EUR` : "?";
+  const adultsStr = adults !== undefined ? adults : 1;
+  const childrenStr = children !== undefined ? children : 0;
+  const durationStr = `${
+    Math.floor(duration / 60) > 0 ? Math.floor(duration / 60) + " hod " : ""
+  }${duration % 60} min`;
+
   return (
-    <div className="relative flex flex-col md:flex-row items-center gap-4 bg-white rounded-xl shadow-md p-4 border border-gray-200 hover:shadow-lg hover:border-[var(--omio-blue)] transition-all duration-200">
-      {/* Ikona a provider */}
-      <div className="flex flex-col items-center min-w-[80px]">
-        <span className="text-[var(--omio-blue)] text-3xl">{icon}</span>
-        <a
-          href={provider.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[var(--omio-blue)] font-semibold underline text-xs mt-1"
-        >
-          {provider.name}
-        </a>
-        {line && <span className="text-xs text-gray-500 mt-1">{line}</span>}
+    <div className="bg-blue-50 rounded-2xl shadow-lg overflow-hidden mb-6 border border-blue-200">
+      {/* Header */}
+      <div className="flex items-center justify-between px-6 py-3 bg-blue-100 border-b border-blue-200">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-2xl font-bold text-blue-700">
+            {from.station || "?"}
+          </span>
+          <span className="text-gray-400 text-base">{from.city || "?"}</span>
+        </div>
+        <div className="flex flex-col items-end">
+          <span className="text-xs text-gray-500">Celkový čas</span>
+          <span className="text-2xl font-bold text-blue-700">
+            {durationStr}
+          </span>
+        </div>
       </div>
-      {/* Odkiaľ/Kam */}
-      <div className="flex-1 flex flex-col gap-1">
-        <div className="flex flex-row gap-4 items-center">
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-400">Odkiaľ</span>
-            <span className="font-bold text-[var(--omio-blue)]">
-              {from.time} {from.station}
-            </span>
-            <span className="text-xs text-gray-500">{from.city}</span>
-          </div>
-          <span className="mx-2 text-lg text-gray-400">→</span>
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-400">Kam</span>
-            <span className="font-bold text-[var(--omio-blue)]">
-              {to.time} {to.station}
-            </span>
-            <span className="text-xs text-gray-500">{to.city}</span>
-          </div>
+
+      {/* Segment (spoj) */}
+      <div className="flex items-center gap-4 px-6 py-4 bg-white rounded-xl shadow-sm mt-4 mx-4">
+        <span className="text-3xl mr-2">{icon}</span>
+        <div className="flex flex-col items-start min-w-[120px]">
+          <span className="font-bold text-lg text-gray-800">
+            {from.station || "?"}
+          </span>
+          <span className="font-bold text-lg text-gray-800">
+            {toStation || "?"}
+          </span>
         </div>
-        <div className="text-xs text-gray-400 mt-2">
-          Dĺžka cesty: <b>{duration} min</b>
+        <div className="flex flex-col ml-4 min-w-[180px]">
+          <span className="text-blue-700 font-semibold text-sm leading-tight">
+            {line}
+          </span>
         </div>
-        {/* Segmenty/prestupy */}
-        {segments.length > 1 && (
-          <div className="mt-2 text-xs text-gray-600">
-            Prestupy:
-            <ul className="list-disc ml-4">
-              {segments.map((seg, idx) => (
-                <li key={idx}>
-                  {seg.type && <span className="font-bold">{seg.type}</span>}{" "}
-                  {seg.from} → {seg.to} {seg.line && <span>({seg.line})</span>}{" "}
-                  {seg.provider && <span>- {seg.provider}</span>}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        <div className="flex flex-col ml-4">
+          <span className="text-gray-500 text-sm leading-tight">
+            {provider}
+          </span>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="flex items-center justify-between px-6 py-3 bg-blue-50 border-t border-blue-100 mt-4">
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-blue-700 underline cursor-pointer">
+            Detaily spojenia
+          </span>
+          <span className="text-sm text-gray-500">
+            {adultsStr} dospelý, {childrenStr} detí
+          </span>
+          {isDirect ? (
+            <span className="inline-block px-3 py-1 rounded text-xs font-bold bg-green-200 text-green-800">
+              Priame spojenie
+            </span>
+          ) : (
+            <span className="inline-block px-3 py-1 rounded text-xs font-bold bg-orange-200 text-orange-800">
+              {transferCount} prestup{transferCount === 1 ? "" : "y"}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-lg font-bold text-green-700">{priceStr}</span>
+          <span className="text-sm text-gray-400">Čiastočná cena</span>
+        </div>
       </div>
     </div>
   );

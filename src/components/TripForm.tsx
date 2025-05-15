@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import LogPanel from "@/components/LogPanel";
+import type { TripOption } from "types";
 
 const tripFormSchema = z.object({
   from: z.string().min(2, "Enter at least 2 characters"),
@@ -33,10 +34,12 @@ export default function TripForm({ setTrips }: TripFormProps) {
   const [children, setChildren] = useState(0);
   const [errors, setErrors] = useState<{ [k: string]: string }>({});
   const [travelerOpen, setTravelerOpen] = useState(false);
+  const [cpLink, setCpLink] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
+    setCpLink(null);
     console.log("[TripForm] Submit!", { from, to, date, adults, children });
 
     const result = tripFormSchema.safeParse({
@@ -58,7 +61,7 @@ export default function TripForm({ setTrips }: TripFormProps) {
     }
 
     try {
-      const formattedDate = date ? format(date, "yyyy-MM-dd") : "";
+      const formattedDate = date ? format(date, "d.M.yyyy") : "";
       const formattedTime = date ? format(date, "HH:mm") : "";
 
       // Uloženie requestu do localStorage
@@ -77,7 +80,8 @@ export default function TripForm({ setTrips }: TripFormProps) {
         JSON.stringify([...prevRequests, newRequest])
       );
 
-      const res = await fetch("http://localhost:3001/trip/search", {
+      // Voláme nový endpoint na scraping cp.sk
+      const res = await fetch("http://localhost:3001/trip/cp-scrape", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -85,13 +89,15 @@ export default function TripForm({ setTrips }: TripFormProps) {
           to,
           date: formattedDate,
           time: formattedTime,
-          passengers: Number(adults) + Number(children),
+          adults,
+          children,
         }),
       });
 
       const data = await res.json();
       console.log("[TripForm] Response from backend", data);
       setTrips(data.data || []);
+      setCpLink(null); // Skryjeme link, keďže zobrazujeme tripy
     } catch (err) {
       console.error("[TripForm] Error during fetch", err);
       // Môžeš pridať alert alebo toast pre usera
@@ -274,6 +280,18 @@ export default function TripForm({ setTrips }: TripFormProps) {
         </Button>
       </form>
       <LogPanel />
+      {cpLink && (
+        <div className="mt-6 text-center">
+          <a
+            href={cpLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block bg-[var(--omio-blue)] text-white font-bold px-6 py-3 rounded-lg shadow hover:bg-[var(--omio-red)] transition-colors text-lg"
+          >
+            Zobraziť spojenia na cp.sk 🚂
+          </a>
+        </div>
+      )}
     </div>
   );
 }

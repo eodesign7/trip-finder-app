@@ -12,12 +12,12 @@
 ## 🔹 Fáza 1 – Inicializácia a UI | 10.5.2025
 
 - [x] Vytvoriť React + Vite projekt s TypeScript
-- [X ] Vytvoriť komponentu `TripForm`
+- [x] Vytvoriť komponentu `TripForm`
   - [x] Input: `odkiaľ`, `kam`
   - [x] `dátum`, `čas`
   - [x] `počet pasažierov`
 - [x] Validácia formulára
-- [ ] OnSubmit → call `POST /trip/search` (axios)
+- [x] OnSubmit → call `POST /trip/search` (axios)
 - [x] Zobrazenie výsledkov tripov
 - [x] Vytvoriť komponentu `LogStream` na zobrazenie logov (z WebSocketu)
 
@@ -51,37 +51,52 @@
 - [ ] Paralelný scraping cp.sk (puppeteer/cheerio)
 - [ ] Ak provider má API, použiť ho, inak scraping
 - [ ] Ak nič, fallback na fakePrice
-- [ ] Počet pasažierov – workaround
 - [x] Zjednotenie výsledkov do `TripOption[]`
 - [x] Rate limiting na serveri
+- [ ] Backend: Scraper iteruje cez všetky tripy, parsuje segmenty, chôdzu, cenu, vráti TripOption[] (zoznam tripov)
 
-### 🕵️‍♂️ Research-checklist
+## 🔹 Fáza 3 – Šedá zóna 😱 – cp.sk smart-link & scraping (test)
 
-- [ ] Zistiť, aké API majú slovenskí provideri (ZSSK, RegioJet, Slovak Lines, FlixBus)
-- [ ] Zistiť, či je možné získať ceny a dostupnosť pre viac pasažierov cez cp.sk alebo priamo u providerov
-- [ ] Zistiť, aké sú limity a podmienky použitia Google Directions API pre transit
-- [ ] Zistiť, či existujú unofficial endpointy alebo verejné datasety pre slovenskú dopravu
-- [ ] Zistiť, aké sú možnosti zadania počtu pasažierov pri scrape cp.sk a providerov
+- [x] Backend generuje link na cp.sk podľa inputu z FE (odkiaľ, kam, dátum, čas, atď.)
+- [x] FE zobrazí link na cp.sk (user si vie kliknúť a pozrieť spojenia/ceny)
+- [x] (Voliteľne) Backend scrapuje výsledky z cp.sk a posiela FE
+- [x] (Voliteľne) FE zobrazuje vyparsované spojenia/ceny priamo v appke
+
+### 🟣 Plán pre scraping cp.sk výsledkov (TripOption[])
+
+- [x] Pridať do requestu aj počet dospelých a detí (adults, children)
+- [x] Na backende fetchnúť HTML z cp.sk podľa vygenerovaného linku
+- [x] Pomocou cheerio (alebo puppeteer, ak bude treba) vyparsovať všetky spojenia (každý trip)
+- [x] Pre každý trip vyparsovať:
+  - hlavné segmenty (bus/vlak, nie všetky zastávky)
+  - odchod/príchod, stanice, provider, číslo spoja, typ
+  - cenu z "Cestovné" sekcie
+- [x] Cenu vynásobiť podľa počtu cestujúcich:
+  - adults = plná cena × adults
+  - children = polovičná cena × children (alebo 0.5 × cena × children)
+- [x] Vytvoriť a vrátiť TripOption[] na FE (jeden objekt pre každé spojenie na stránke)
+- [x] FE zobrazí tripy v kartách ako doteraz
 
 ### 🚦 Google Transit + Ceny (custom flow)
 
-- [ ] User zadá ➜ Odkiaľ/Kam, Dátum/Čas, Počet pasažierov
-- [ ] Backend ➜ Google Directions API (`mode=transit`)
-- [ ] Z výsledku zistiť provider: "FlixBus", "ZSSK", "RegioJet"
-- [ ] Ak chceš cenu:
-  - [ ] Zavolať špecifické API (napr. FlixBus Booking API, RegioJet unofficial)
-  - [ ] Alebo fallback na "Odhad ceny" podľa vzdialenosti + provider typ
-- [ ] Scoring, total time, prestupy, zobrazenie na FE
+- [x] User zadá ➜ Odkiaľ/Kam, Dátum/Čas, Počet pasažierov
+- [x] Backend ➜ Google Directions API (`mode=transit`)
+- [x] Z výsledku zistiť provider: "FlixBus", "ZSSK", "RegioJet"
 
 ---
 
 ## 🔹 Fáza 4 – Finalizácia + UXe
 
 - [ ] Pridať loading stavy, error handling
-- [ ] Vykresliť výber spojení (karta pre každý trip)
+- [x] Vykresliť výber spojení (karta pre každý trip)
 - [ ] Pridať skórovanie výsledkov (voliteľne cez OpenAI)
 - [ ] Odkomunikovať stav frontend ↔ backend cez logy
 - [ ] Získať ceny podľa poskytovateľa (napr. ZSSK, RegioJet) – zamerať sa len na Slovensko
+- [ ] FE: Pridať filtre na trvanie, cenu, priame spojenia (len 1 line-item)
+- [ ] Backend: Nový endpoint na AI odporúčanie najlepšieho tripu (OpenAI sumarizácia)
+- [ ] FE: Zobraziť AI odporúčanie a sumarizáciu tripu
+- [ ] FE: Auto-complete pre odkial/kam
+- [ ] FE: Automaticke ziskavanie uzivatelskej polohy(browser)
 
 ---
 
@@ -96,7 +111,7 @@
 
 ## 💡 BONUS: Dev UX
 
-- [ ] Pridať prostredie `.env` pre API kľúče
+- [x] Pridať prostredie `.env` pre API kľúče
 - [ ] Logger helper (`logStep(msg: string) => socket.send(...)`)
 
 ---

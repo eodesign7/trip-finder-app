@@ -27,7 +27,7 @@
     },
 
     "forceConsistentCasingInFileNames": true,
-    "composite": true 
+    "composite": true
   },
-  "include": ["src", "types.d.ts"]
+  "include": ["src", "types.ts"]
 }

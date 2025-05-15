@@ -2,6 +2,8 @@ import "./App.css";
 import TripForm from "@/components/TripForm";
 import TripResults from "@/components/TripResults";
 import { useState } from "react";
+import type { TripOption } from "types";
+
 
 export default function App() {
   const [trips, setTrips] = useState<TripOption[]>([]);

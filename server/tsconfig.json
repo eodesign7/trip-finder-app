@@ -112,5 +112,5 @@
     "composite": true
   },
 
-  "include": ["src", "../types.d.ts"]
+  "include": ["src", "config", "../types.ts"]
 }
