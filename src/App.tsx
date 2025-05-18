@@ -1,12 +1,16 @@
 import "./App.css";
-import TripForm from "@/components/TripForm";
+// import TripForm from "@/components/TripForm";
 import TripResults from "@/components/TripResults";
 import { useState } from "react";
 import type { TripOption } from "types";
-
+import SearchForm from "./components/search/SearchForm";
 
 export default function App() {
   const [trips, setTrips] = useState<TripOption[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [aiSummary, setAiSummary] = useState<string>("");
+  const [aiScores, setAiScores] = useState<any[]>([]);
+
   return (
     <main className="min-h-screen p-0 m-0">
       {/* Hero image */}
@@ -26,9 +30,19 @@ export default function App() {
           <span className="text-[var(--omio-red)]">.</span>Trips
         </h1>
         <div className="w-full flex justify-center">
-          <TripForm setTrips={setTrips} />
+          <SearchForm
+            setTrips={setTrips}
+            setIsLoading={setIsLoading}
+            setAiSummary={setAiSummary}
+            setAiScores={setAiScores}
+          />
         </div>
-        <TripResults trips={trips} />
+        {aiSummary && (
+          <div className="w-full max-w-3xl mx-auto mt-4 mb-2 p-4 bg-orange-50 border-l-4 border-orange-400 text-orange-900 rounded shadow">
+            <strong>AI odporúčanie:</strong> {aiSummary}
+          </div>
+        )}
+        <TripResults trips={trips} isLoading={isLoading} aiScores={aiScores} />
       </div>
     </main>
   );

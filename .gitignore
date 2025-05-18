@@ -34,3 +34,6 @@ build/
 
 # ENV
 /server/.env
+
+# Docs
+.docs/*

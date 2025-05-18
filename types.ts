@@ -1,3 +1,12 @@
+export type TripSegment = {
+  type?: string;
+  from?: string;
+  to?: string;
+  line?: string;
+  provider?: string;
+  stops?: { time: string; station: string }[];
+};
+
 export type TripOption = {
   from: { time: string; station: string; city: string };
   to: { time: string; station: string; city: string };
@@ -5,17 +14,12 @@ export type TripOption = {
   icon: string;
   provider: { name: string; url: string };
   line: string;
-  segments: Array<{
-    type?: string;
-    from?: string;
-    to?: string;
-    line?: string;
-    provider?: string;
-  }>;
+  segments: TripSegment[];
   totalPrice?: number;
   price?: number;
   adults?: number;
   children?: number;
+  date?: string;
 };
 
 export type GoogleStep = {

@@ -1,0 +1,25 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+Používaj Shadcn komponenty všade, kde to dáva zmysel.
+→ Nevymýšľaj vlastné UI, keď už existuje kvalitný Shadcn komponent.
+Na hľadanie UI prvkov, tokenov a balíčkov vždy najprv použi Context7 MCP Tool.
+→ Je to tvoj hlavný vyhľadávač komponentov. Porovnaj, či nie je lepšia verzia v inom registri.
+Ak Context7 nenájde, čo potrebuješ, skús Serper (search) alebo Fetch MCP (scraping).
+→ Sekundárne nástroje, keď hlavný zlyhá.
+Ak máš custom komponent z URL alebo GitHubu, extrahuj z neho metadáta a kód cez Fetch MCP.
+→ Dôležité je, aby si mal presné info o zdroji a štruktúre komponentu.
+Vždy udržiavaj aktuálny súbor shadcn-context.md:
+Na začiatku projektu ho založ.
+Každý nový Shadcn komponent zapíš (zdroj, registry, overrides, dátum poslednej aktualizácie).
+Používaj tento log na kontrolu, aby si neinštaloval niečo, čo už v projekte je.
+Po každej inštalácii komponentu spusti lint, type check a prettier.
+→ Ak niečo rozbije typy alebo štýly, hneď to oprav.
+Tailwind config, theme tokens a globals.css vždy aktualizuj podľa pravidiel registry alebo zdroja komponentu.
+→ Nezabudni na globálne štýly a tokeny, nech je UI konzistentné.
+Ak bol Shadcn komponent v remote registry aktualizovaný, ponúkni automatizovaný merge, preview diff a apply.
+→ Udržiavaj komponenty fresh, ale vždy si pozri, čo sa mení.
+
+Rešpektuj custom design system pravidlá z registry metadát.

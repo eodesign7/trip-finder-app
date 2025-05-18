@@ -48,12 +48,11 @@
 
 - [x] Endpoint: Google Directions API (transit)
 - [x] Zistenie providera z odpovede
-- [ ] Paralelný scraping cp.sk (puppeteer/cheerio)
-- [ ] Ak provider má API, použiť ho, inak scraping
-- [ ] Ak nič, fallback na fakePrice
+- [x] Paralelný scraping cp.sk (puppeteer/cheerio)
+- [x] Ak nič, fallback na fakePrice
 - [x] Zjednotenie výsledkov do `TripOption[]`
 - [x] Rate limiting na serveri
-- [ ] Backend: Scraper iteruje cez všetky tripy, parsuje segmenty, chôdzu, cenu, vráti TripOption[] (zoznam tripov)
+- [x] Backend: Scraper iteruje cez všetky tripy, parsuje segmenty, chôdzu, cenu, vráti TripOption[] (zoznam tripov)
 
 ## 🔹 Fáza 3 – Šedá zóna 😱 – cp.sk smart-link & scraping (test)
 
@@ -77,70 +76,77 @@
 - [x] Vytvoriť a vrátiť TripOption[] na FE (jeden objekt pre každé spojenie na stránke)
 - [x] FE zobrazí tripy v kartách ako doteraz
 
-### 🚦 Google Transit + Ceny (custom flow)
+---
+
+## 🔹 Fáza 4 – Finalizácia + UI/UXe
+
+- [ ] BUG: Segmenty v TripOption[] nie vždy nadväzujú (server-side/AI fallback fix)
+- [x] Pridať loading stavy, error handling
+- [x] Vykresliť výber spojení (karta pre každý trip)
+- [ ] Pridať skórovanie výsledkov (voliteľne cez OpenAI)
+- [ ] Odkomunikovať stav frontend ↔ backend cez logy
+- [ ] FE: Pridať filtre na trvanie, cenu, priame spojenia (len 1 line-item)
+- [ ] Backend: Nový endpoint na AI odporúčanie najlepšieho tripu (OpenAI sumarizácia)
+- [x] FE: Zobraziť AI odporúčanie a sumarizáciu tripu
+- [x] FE: Auto-complete pre odkial/kam
+- [x] FE: Automaticke ziskavanie uzivatelskej polohy(browser)
+- [x] FE: Zapracovať komponenty z iného projektu
+- [x] README pre spustenie projektu
+
+### 🔹 Fáza 4: Postup
+
+- 1. Zapracovať UI/UX komponenty (nahradiť základné prvky za tvoje custom alebo shadcn/ui komponenty)
+- 2. Pridať loading stavy (spinner pri hľadaní, načítavaní výsledkov)
+- 3. Pridať error handling (zobraziť userovi chyby, toast/alert)
+- 4. Pridať filtre na trvanie, cenu, priame spojenia (komponenty + logika filtrovania)
+- 5. Pridať auto-complete pre inputy Odkiaľ/Kam (môže byť najprv mock)
+- 6. Pridať možnosť automatického získania polohy (browser geolocation API)
+- 7. Zobraziť AI odporúčanie/sumarizáciu tripu (keď bude endpoint hotový)
+- 8. Zapracovať komponenty z iného projektu (ak treba niečo špeciálne)
+- 9. README pre spustenie projektu (návod, setup, env vars)
+
+---
+
+## 🔹 Fáza 4: Optimal – Refaktor scraping logiky (Bratislava → Nové Zámky)
+
+- [ ] Rozdeliť scraping na dve vrstvy:
+  - [ ] `trip.getter.ts` – získava HTML (Puppeteer alebo loader z uloženého HTML)
+  - [ ] `trip.constructor.ts` – parsuje HTML a vracia TripOption[]
+- [ ] Pripraviť testovací HTML súbor v projekte (napr. `test-data/cp-bratislava-nove-zamky.html`)
+- [ ] Pripraviť endpoint/test, ktorý vráti TripOption[] pre túto trasu
+- [ ] Všetko ladiť len na tejto konkrétnej trase (deterministický input)
+- [ ] Otestovať, že vieme získať všetky potrebné dáta (segmenty, ceny, provider, atď.)
+
+**Prečo:**
+
+- Prehľadnosť, testovateľnosť, rýchlejšie iterácie, pripravenosť na ďalšie trasy.
+
+**Ako:**
+
+- Getter = len raw HTML (alebo loader z file)
+- Constructor = čisté parsovanie a transformácia na TripOption[]
+
+---
+
+## 💡Fáza BONUS: Dev UX - Enhancements - Brainstorm
+
+- [x] Pridať prostredie `.env` pre API kľúče
+- [ ] Logger helper (`logStep(msg: string) => socket.send(...)`)
+- [ ] Pridanie scoringu cez OpenAI
+- [ ] Možnosť filtrovať/prepínať medzi bus/vlak
+- [ ] Loading stav na Search button (spinner)
+- [ ] Autocomplete pre inputy (mock/fake)
+- [ ] Ešte viac UX vychytávok (napr. clear button, copy logy, atď.)
+- [ ] Auto-scroll logov na posledný záznam
+- [ ] Pridať možnosť filtrovať výsledky podľa provideru
+
+---
+
+### 🚦 Google Transit + Ceny (custom flow) - Toto som nakoniec reálne nepoužil
 
 - [x] User zadá ➜ Odkiaľ/Kam, Dátum/Čas, Počet pasažierov
 - [x] Backend ➜ Google Directions API (`mode=transit`)
 - [x] Z výsledku zistiť provider: "FlixBus", "ZSSK", "RegioJet"
 
 ---
-
-## 🔹 Fáza 4 – Finalizácia + UXe
-
-- [ ] Pridať loading stavy, error handling
-- [x] Vykresliť výber spojení (karta pre každý trip)
-- [ ] Pridať skórovanie výsledkov (voliteľne cez OpenAI)
-- [ ] Odkomunikovať stav frontend ↔ backend cez logy
-- [ ] Získať ceny podľa poskytovateľa (napr. ZSSK, RegioJet) – zamerať sa len na Slovensko
-- [ ] FE: Pridať filtre na trvanie, cenu, priame spojenia (len 1 line-item)
-- [ ] Backend: Nový endpoint na AI odporúčanie najlepšieho tripu (OpenAI sumarizácia)
-- [ ] FE: Zobraziť AI odporúčanie a sumarizáciu tripu
-- [ ] FE: Auto-complete pre odkial/kam
-- [ ] FE: Automaticke ziskavanie uzivatelskej polohy(browser)
-
----
-
-## 🔹 Fáza 5 – Deployment a Docker
-
-- [ ] Dockerfile pre FE (Vite build)
-- [ ] Dockerfile pre backend (Node + Express + WebSocket)
-- [ ] Docker Compose setup (voliteľné)
-- [ ] README pre spustenie projektu
-
----
-
-## 💡 BONUS: Dev UX
-
-- [x] Pridať prostredie `.env` pre API kľúče
-- [ ] Logger helper (`logStep(msg: string) => socket.send(...)`)
-
----
-
-## API RESOURCE
-
-API Zameranie URL
-Navitia - Bus+Train EU - https://www.navitia.io/ - Nema Freemium - licencia 5,000 EUR/rocne
-
-## Nice to Have - Enhancements
-
-- [ ] Pridanie scoringu cez OpenAI
-- [ ] Možnosť filtrovať/prepínať medzi bus/vlak
-- [ ] Podpora lietadiel/áut/kompatibilita s mapami
-- [ ] Dockerizácia a CI/CD
-
----
-
-## 🧠 Nápady na vylepšenia (brainstorm)
-
-Tu budeme zbierať všetky nápady, ktoré nás napadnú počas vývoja, ale nie sú prioritou v hlavnom checkliste. Môžeme ich kedykoľvek doplniť alebo rozpracovať neskôr.
-
-- Loading stav na Search button (spinner)
-- Skutočné napojenie na backend (axios)
-- Autocomplete pre inputy (mock/fake)
-- Ešte viac UX vychytávok (napr. clear button, copy logy, atď.)
-- Auto-scroll logov na posledný záznam
-- Tooltipy a help texty pre inputy
-- Dark mode prepínač
-- Pridať možnosť filtrovať výsledky podľa provideru
-- ... (pridávaj ďalšie nápady sem, braško!)
 ```
