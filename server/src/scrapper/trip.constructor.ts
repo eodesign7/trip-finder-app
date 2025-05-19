@@ -1,23 +1,30 @@
 import * as cheerio from "cheerio";
-import type { TestTripOption } from "../test/scrapped-trips";
+import type { TripOption, TripSegment } from "../../../types";
 
-export function parseTripsFromHtml(
-  html: string,
-  today: string
-): TestTripOption[] {
+export function parseTripsFromHtml(html: string, today: string): TripOption[] {
   const $ = cheerio.load(html);
-  const trips: TestTripOption[] = [];
+  const trips: TripOption[] = [];
   let skipped = 0;
+  // --- NOVÁ LOGIKA POROVNÁVANIA DÁTUMOV ---
+  // today môže byť "2025-05-18" alebo "18.5.2025" alebo "18.5." atď.
+  // Extrahuj d.M. z today
+  let todayShort = today;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(today)) {
+    const [y, m, d] = today.split("-");
+    todayShort = `${parseInt(d, 10)}.${parseInt(m, 10)}.`;
+  } else if (/^\d{1,2}\.\d{1,2}\./.test(today)) {
+    todayShort = today.match(/\d{1,2}\.\d{1,2}\./)?.[0] || today;
+  }
   $(".box.connection.detail-box").each((i, el) => {
     if (trips.length >= 3) return false;
     // Získaj dátum tripu
     const dateAfter = $(el).find(".date-after").text().trim();
-    const dateOnly = dateAfter.split(" ")[0];
-    if (dateOnly !== today) {
+    const dateOnly = dateAfter.match(/\d{1,2}\.\d{1,2}\./)?.[0] || dateAfter;
+    if (dateOnly !== todayShort) {
       console.log(
         `[constructor] Trip #${
           i + 1
-        } preskočený, nie je na dnešný dátum (${dateAfter} != ${today})`
+        } preskočený, nie je na dnešný dátum (${dateAfter} != ${todayShort})`
       );
       skipped++;
       return;
@@ -101,16 +108,78 @@ export function parseTripsFromHtml(
       priceMatch = priceText.match(/([\d,.]+)\s*EUR/);
       if (priceMatch) price = parseFloat(priceMatch[1].replace(",", "."));
     }
-    // Počet segmentov (každý .outside-of-popup alebo .outside-of-popup--with-link-dist)
-    const segmentCount = $(el).find(
+    // --- SEGMENTY ---
+    const segmentBlocks = $(el).find(
       ".connection-details .outside-of-popup, .connection-details .outside-of-popup--with-link-dist"
-    ).length;
-    const segments = Array(segmentCount).fill({});
+    );
+    const segments = segmentBlocks
+      .map((j, segEl) => {
+        // Typ segmentu
+        let type: "bus" | "train" | "walk" = "bus";
+        let icon: "bus" | "train" | "walk" = "bus";
+        const iconText = $(segEl)
+          .find(".line-title .tt-icon")
+          .text()
+          .toLowerCase();
+        const titleText = $(segEl)
+          .find(".line-title h3 span")
+          .text()
+          .toLowerCase();
+        if (iconText.includes("247") || titleText.includes("bus")) {
+          type = "bus";
+          icon = "bus";
+        } else if (
+          iconText.includes("251") ||
+          titleText.includes("os") ||
+          titleText.includes("ec") ||
+          titleText.includes("vlak") ||
+          titleText.includes("metropolitan")
+        ) {
+          type = "train";
+          icon = "train";
+        } else if ($(segEl).hasClass("outside-of-popup--with-link-dist")) {
+          type = "walk";
+          icon = "walk";
+        }
+        // Stanice segmentu
+        const ul = $(segEl).find("ul.stations").first();
+        const liAll = ul.find("li");
+        const fromLi = liAll.filter(".item.active").first();
+        const toLi = liAll.filter(".item.active.last").first();
+        const from =
+          fromLi.find(".name").text().trim() ||
+          liAll.first().find(".name").text().trim();
+        const to =
+          toLi.find(".name").text().trim() ||
+          liAll.last().find(".name").text().trim();
+        // Zastávky
+        const stops = liAll
+          .map((_, li) => ({
+            time: $(li).find(".time").text().trim(),
+            station: $(li).find(".name").text().trim(),
+          }))
+          .get();
+        // Linka a provider
+        const line = $(segEl).find(".line-title h3 span").text().trim();
+        const provider = $(segEl).find(".line-title .owner span").text().trim();
+        return {
+          from,
+          to,
+          type,
+          icon,
+          line,
+          provider,
+          stops,
+        };
+      })
+      .get();
     // Log
     console.log(
       `[constructor] Trip #${
         i + 1
-      } pridaný: ${departureTime} ${firstStation} → ${lastTime} ${lastStation}, duration: ${duration}min, segments: ${segmentCount}, price: ${price}`
+      } pridaný: ${departureTime} ${firstStation} → ${lastTime} ${lastStation}, duration: ${duration}min, segments: ${
+        segments.length
+      }, price: ${price}`
     );
     trips.push({
       from: { time: firstTime, station: firstStation, city: "" },
@@ -120,7 +189,6 @@ export function parseTripsFromHtml(
       price,
       totalPrice: price,
       adults: 1,
-      children: 0,
       date: dateAfter,
     });
   });

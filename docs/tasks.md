@@ -86,36 +86,25 @@
 - [ ] Pridať skórovanie výsledkov (voliteľne cez OpenAI)
 - [ ] Odkomunikovať stav frontend ↔ backend cez logy
 - [ ] FE: Pridať filtre na trvanie, cenu, priame spojenia (len 1 line-item)
-- [ ] Backend: Nový endpoint na AI odporúčanie najlepšieho tripu (OpenAI sumarizácia)
+- [x] Backend: Nový endpoint na AI odporúčanie najlepšieho tripu (OpenAI sumarizácia)
 - [x] FE: Zobraziť AI odporúčanie a sumarizáciu tripu
 - [x] FE: Auto-complete pre odkial/kam
 - [x] FE: Automaticke ziskavanie uzivatelskej polohy(browser)
 - [x] FE: Zapracovať komponenty z iného projektu
 - [x] README pre spustenie projektu
 
-### 🔹 Fáza 4: Postup
-
-- 1. Zapracovať UI/UX komponenty (nahradiť základné prvky za tvoje custom alebo shadcn/ui komponenty)
-- 2. Pridať loading stavy (spinner pri hľadaní, načítavaní výsledkov)
-- 3. Pridať error handling (zobraziť userovi chyby, toast/alert)
-- 4. Pridať filtre na trvanie, cenu, priame spojenia (komponenty + logika filtrovania)
-- 5. Pridať auto-complete pre inputy Odkiaľ/Kam (môže byť najprv mock)
-- 6. Pridať možnosť automatického získania polohy (browser geolocation API)
-- 7. Zobraziť AI odporúčanie/sumarizáciu tripu (keď bude endpoint hotový)
-- 8. Zapracovať komponenty z iného projektu (ak treba niečo špeciálne)
-- 9. README pre spustenie projektu (návod, setup, env vars)
-
 ---
 
 ## 🔹 Fáza 4: Optimal – Refaktor scraping logiky (Bratislava → Nové Zámky)
 
-- [ ] Rozdeliť scraping na dve vrstvy:
-  - [ ] `trip.getter.ts` – získava HTML (Puppeteer alebo loader z uloženého HTML)
-  - [ ] `trip.constructor.ts` – parsuje HTML a vracia TripOption[]
-- [ ] Pripraviť testovací HTML súbor v projekte (napr. `test-data/cp-bratislava-nove-zamky.html`)
-- [ ] Pripraviť endpoint/test, ktorý vráti TripOption[] pre túto trasu
-- [ ] Všetko ladiť len na tejto konkrétnej trase (deterministický input)
-- [ ] Otestovať, že vieme získať všetky potrebné dáta (segmenty, ceny, provider, atď.)
+- [x] Rozdeliť scraping na dve vrstvy:
+  - [x] `trip.getter.ts` – získava HTML (Puppeteer alebo loader z uloženého HTML)
+  - [x] `trip.constructor.ts` – parsuje HTML a vracia TripOption[]
+- [x] Pripraviť testovací HTML súbor v projekte (napr. `test-data/cp-bratislava-nove-zamky.html`)
+- [x] Pripraviť endpoint/test, ktorý vráti TripOption[] pre túto trasu
+- [x] Všetko ladiť len na tejto konkrétnej trase (deterministický input)
+- [x] Otestovať, že vieme získať všetky potrebné dáta (segmenty, ceny, provider, atď.)
+- [ ] Získanie a vyskladanie samostatných segmentov, teda potrebných spojov-prestupov a pod...
 
 **Prečo:**
 
@@ -132,7 +121,7 @@
 
 - [x] Pridať prostredie `.env` pre API kľúče
 - [ ] Logger helper (`logStep(msg: string) => socket.send(...)`)
-- [ ] Pridanie scoringu cez OpenAI
+- [x] Pridanie scoringu cez OpenAI
 - [ ] Možnosť filtrovať/prepínať medzi bus/vlak
 - [ ] Loading stav na Search button (spinner)
 - [ ] Autocomplete pre inputy (mock/fake)

@@ -1,25 +1,22 @@
 export type TripSegment = {
-  type?: string;
-  from?: string;
-  to?: string;
-  line?: string;
-  provider?: string;
-  stops?: { time: string; station: string }[];
+  from: string;
+  to: string;
+  type: "train" | "bus" | "walk";
+  icon: "bus" | "walk" | "train";
+  line: string;
+  provider: string;
+  stops: { time: string; station: string }[];
 };
 
 export type TripOption = {
   from: { time: string; station: string; city: string };
   to: { time: string; station: string; city: string };
   duration: number;
-  icon: string;
-  provider: { name: string; url: string };
-  line: string;
   segments: TripSegment[];
-  totalPrice?: number;
-  price?: number;
-  adults?: number;
-  children?: number;
-  date?: string;
+  price: number;
+  totalPrice: number;
+  adults: number;
+  date: string;
 };
 
 export type GoogleStep = {

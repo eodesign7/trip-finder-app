@@ -5,8 +5,8 @@ const tripSchema = z.object({
   from: z.string().min(1, "From is required"),
   to: z.string().min(1, "To is required"),
   date: z.string().min(1, "Date is required"),
+  time: z.string().min(1, "Time is required"),
   adults: z.number().int().min(1, "At least one adult required"),
-  children: z.number().int().min(0, "Children must be 0 or more"),
 });
 
 export function validateTripInput(

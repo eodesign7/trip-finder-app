@@ -1,30 +1,9 @@
-// Testovací typ pre manuálne tripy bez provider/line v hlavnom tripe
-export type TestTripSegment = {
-  from: string;
-  to: string;
-  type: "train" | "bus" | "walk";
-  icon: "bus" | "walk" | "train";
-  line: string;
-  provider: string;
-  stops: { time: string; station: string }[];
-};
-
-export type TestTripOption = {
-  from: { time: string; station: string; city: string };
-  to: { time: string; station: string; city: string };
-  duration: number;
-  segments: TestTripSegment[];
-  price: number;
-  totalPrice: number;
-  adults: number;
-  children: number;
-  date: string;
-};
+import type { TripOption, TripSegment } from "../../../types";
 
 // Manuálne prepísané tripy zo stránky CP.sk pre trasu Dubník → Bratislava
 // Ikony: 'bus', 'walk', 'train' (SVG podľa lucide-react)
 
-export const manualTrips: TestTripOption[] = [
+export const manualTrips: TripOption[] = [
   {
     from: { time: "13:21", station: "Dubník, nám.", city: "Dubník" },
     to: { time: "15:55", station: "Bratislava hl.st.", city: "Bratislava" },
@@ -70,7 +49,6 @@ export const manualTrips: TestTripOption[] = [
     price: 6,
     totalPrice: 6,
     adults: 1,
-    children: 0,
     date: "18.5.",
   },
   // Trip 2
@@ -119,7 +97,6 @@ export const manualTrips: TestTripOption[] = [
     price: 6,
     totalPrice: 6,
     adults: 1,
-    children: 0,
     date: "18.5.",
   },
   // Trip 3
@@ -168,7 +145,6 @@ export const manualTrips: TestTripOption[] = [
     price: 6,
     totalPrice: 6,
     adults: 1,
-    children: 0,
     date: "18.5.",
   },
 ];

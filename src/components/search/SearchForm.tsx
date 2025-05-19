@@ -46,21 +46,30 @@ export default function SearchForm({
   const [date, setDate] = useState<Date>(now);
   const [departureTime, setDepartureTime] = useState<string>(defaultTime);
   const [adults, setAdults] = useState(1);
-  const [children, setChildren] = useState(0);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [isLoading, setLocalLoading] = useState(false);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!from || !to || !date || !departureTime) {
+    if (!from || !to || !date) {
       toast({
         title: "Missing information",
-        description: "Please fill in all required fields",
+        description:
+          "Please fill in all required fields (From, To, Date, Time)",
         variant: "destructive",
       });
       return;
     }
+
+    // Fallback na aktuálny čas, ak by departureTime bol prázdny
+    const timeToSend = departureTime || defaultTime;
+    console.log(
+      "departureTime pred requestom:",
+      departureTime,
+      "timeToSend:",
+      timeToSend
+    );
 
     setLocalLoading(true);
     setIsLoading(true);
@@ -72,14 +81,25 @@ export default function SearchForm({
           from,
           to,
           date: format(date, "yyyy-MM-dd"),
-          time: departureTime,
+          time: timeToSend,
           adults: Number(adults),
-          children: Number(children),
         }),
       });
 
       const data = await res.json();
 
+      if (res.status === 404) {
+        toast({
+          title: "Žiadne spoje nenájdené",
+          description:
+            "Na zvolený dátum a čas nie sú dostupné žiadne spoje. Skús iný čas alebo deň.",
+          variant: "destructive",
+        });
+        setTrips([]);
+        setAiSummary("");
+        setAiScores([]);
+        return;
+      }
       if (!res.ok) {
         throw new Error(data.message || "Failed to fetch trips");
       }
@@ -250,9 +270,14 @@ export default function SearchForm({
             {/* Departure Time */}
             <div className="space-y-2">
               <Label className="font-semibold text-brand-800">
-                Departure Time
+                Departure Time{" "}
+                <span className="text-xs text-orange-500">(required)</span>
               </Label>
-              <TimePicker value={departureTime} onChange={setDepartureTime} />
+              <TimePicker
+                value={departureTime}
+                onChange={setDepartureTime}
+                placeholder="Select departure time (required)"
+              />
             </div>
             {/* Adults */}
             <div className="space-y-2">
@@ -270,25 +295,6 @@ export default function SearchForm({
                 value={adults}
                 onChange={(e) => setAdults(Number(e.target.value))}
                 placeholder="Number of adults"
-                className="transition-all duration-300 hover:border-orange-400 focus:border-orange-400 bg-white"
-              />
-            </div>
-            {/* Children */}
-            <div className="space-y-2">
-              <Label
-                htmlFor="children"
-                className="font-semibold text-brand-800 flex items-center gap-1"
-              >
-                <Users className="h-3.5 w-3.5 text-orange-300" /> Children
-              </Label>
-              <Input
-                id="children"
-                type="number"
-                min={0}
-                max={10}
-                value={children}
-                onChange={(e) => setChildren(Number(e.target.value))}
-                placeholder="Number of children"
                 className="transition-all duration-300 hover:border-orange-400 focus:border-orange-400 bg-white"
               />
             </div>

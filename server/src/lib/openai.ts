@@ -6,7 +6,6 @@ export type TripUserInput = {
   date: string;
   time: string;
   adults: number;
-  children: number;
 };
 
 export type TripAiScore = {
@@ -33,9 +32,14 @@ if (!OPENAI_API_KEY) {
  */
 export async function sendTripScoringRequest(
   userInput: TripUserInput,
-  trips: TripOption[]
+  trips: TripOption[],
+  isTomorrow?: boolean
 ): Promise<TripAiResult> {
-  const prompt = `Si špičkový slovenský travel expert. Na základe vstupu užívateľa a zoznamu spojení mu odporuč najlepší spoj.
+  let prompt = "";
+  if (isTomorrow) {
+    prompt += `Dnes už nič nejde, ale tu sú spoje na zajtra.\n`;
+  }
+  prompt += `Si špičkový slovenský travel expert. Na základe vstupu užívateľa a zoznamu spojení mu odporuč najlepší spoj.
 Odpovedz stručne, jasne a konkrétne, ako by si radil kamarátovi:
 - Napíš presne, kde má nastúpiť (názov stanice, čas).
 - Ak treba prestupovať, napíš kde vystúpiť, koľko pešo (odhadni podľa segmentov typu WALK), kde nastúpiť na ďalší spoj a kedy.
