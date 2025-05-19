@@ -7,21 +7,21 @@ interface LocationInputProps {
   onChange: (value: string) => void;
   placeholder: string;
   icon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
-// This would typically come from an API
-const POPULAR_LOCATIONS = [
-  "Nové Zámky, Slovakia",
-  "Bratislava, Slovakia",
-  "Vienna, Austria",
-  "Budapest, Hungary",
-  "Prague, Czech Republic",
-  "Zurich, Switzerland",
-  "Munich, Germany",
-  "Berlin, Germany",
-  "Paris, France",
-  "Amsterdam, Netherlands",
-];
+type NominatimResult = {
+  display_name: string;
+  address: {
+    city?: string;
+    town?: string;
+    village?: string;
+    municipality?: string;
+    county?: string;
+    state?: string;
+    country?: string;
+  };
+};
 
 export default function LocationInput({
   id,
@@ -29,10 +29,13 @@ export default function LocationInput({
   onChange,
   placeholder,
   icon,
+  rightIcon,
 }: LocationInputProps) {
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<NominatimResult[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLDivElement>(null);
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,41 +46,56 @@ export default function LocationInput({
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    onChange(query);
+  useEffect(() => {
+    if (!value || value.length < 2) {
+      setSuggestions([]);
+      setIsOpen(false);
+      return;
+    }
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    debounceTimeout.current = setTimeout(() => {
+      fetchSuggestions(value);
+    }, 400);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value]);
 
-    if (query.length > 1) {
-      const filtered = POPULAR_LOCATIONS.filter((location) =>
-        location.toLowerCase().includes(query.toLowerCase())
+  async function fetchSuggestions(query: string) {
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          query
+        )}&addressdetails=1&limit=5`
       );
-      setSuggestions(filtered);
+      const data: NominatimResult[] = await res.json();
+      setSuggestions(data);
       setIsOpen(true);
-    } else {
+    } catch {
       setSuggestions([]);
       setIsOpen(false);
     }
+    setLoading(false);
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.target.value);
   };
 
-  const handleSelectSuggestion = (suggestion: string) => {
-    onChange(suggestion);
+  const handleSelectSuggestion = (suggestion: NominatimResult) => {
+    const city = suggestion.display_name.split(",")[0].trim();
+    onChange(city);
     setSuggestions([]);
     setIsOpen(false);
   };
 
   const handleFocus = () => {
-    if (value.length > 1) {
-      const filtered = POPULAR_LOCATIONS.filter((location) =>
-        location.toLowerCase().includes(value.toLowerCase())
-      );
-      setSuggestions(filtered);
+    if (value.length > 1 && suggestions.length > 0) {
       setIsOpen(true);
     }
   };
@@ -97,20 +115,34 @@ export default function LocationInput({
           className={`${
             icon ? "pl-10" : ""
           } transition-all duration-300 hover:border-amber-500 focus:border-amber-500`}
+          onBlur={() => setTimeout(() => setIsOpen(false), 150)}
         />
+        {rightIcon && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
+            {rightIcon}
+          </div>
+        )}
+        {loading && <div className="absolute right-2 top-2 text-xs">...</div>}
       </div>
 
       {isOpen && suggestions.length > 0 && (
         <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-auto animate-fade-in">
-          {suggestions.map((suggestion, index) => (
-            <div
-              key={index}
-              className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-sm transition-colors duration-150"
-              onClick={() => handleSelectSuggestion(suggestion)}
-            >
-              {suggestion}
-            </div>
-          ))}
+          {suggestions.map((suggestion, index) => {
+            const parts = suggestion.display_name.split(",");
+            let region = parts[1]?.replace(/okres/i, "").trim() || "";
+            if (region) region = `okr. ${region}`;
+            const city = parts[0]?.trim() || "";
+            return (
+              <div
+                key={index}
+                className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-sm transition-colors duration-150"
+                onClick={() => handleSelectSuggestion(suggestion)}
+              >
+                {city}
+                {region && `, ${region}`}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

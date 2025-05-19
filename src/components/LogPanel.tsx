@@ -1,8 +1,14 @@
 import { useWebSocket } from "@/hooks/use-web-socket";
-import parseLog from "@/utils/parse-log"; 
+import parseLog from "@/utils/parse-log";
+import { useRef, useEffect } from "react";
 
 export default function LogPanel() {
   const logs = useWebSocket();
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [logs]);
 
   if (!logs) return null;
   return (
@@ -49,6 +55,7 @@ export default function LogPanel() {
           </div>
         );
       })}
+      <div ref={bottomRef} />
     </div>
   );
 }

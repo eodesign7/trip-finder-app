@@ -1,13 +1,18 @@
+// cSpell:disable
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Calendar as CalendarIcon,
-  MapPin,
   Users,
   Locate,
   ArrowRight,
   Loader2,
+  Clock,
+  ArrowRightToLine,
+  ArrowRightFromLine,
+  ArrowRightLeft,
 } from "lucide-react";
 import {
   Popover,
@@ -18,11 +23,12 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import LocationInput from "@/components/search/LocationInput";
 import { toast } from "@/hooks/use-toast";
 import type { TripAiScore, TripOption } from "types";
 import TimePicker from "@/components/ui/TimePicker";
+import { getCurrentLocation } from "@/utils/location";
+import LocationInput from "@/components/search/LocationInput";
+import { useTripSearch } from "./useTripSearch";
 
 type SearchFormProps = {
   setTrips: React.Dispatch<React.SetStateAction<TripOption[]>>;
@@ -47,190 +53,86 @@ export default function SearchForm({
   const [departureTime, setDepartureTime] = useState<string>(defaultTime);
   const [adults, setAdults] = useState(1);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
-  const [isLoading, setLocalLoading] = useState(false);
-
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!from || !to || !date) {
-      toast({
-        title: "Missing information",
-        description:
-          "Please fill in all required fields (From, To, Date, Time)",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Fallback na aktuálny čas, ak by departureTime bol prázdny
-    const timeToSend = departureTime || defaultTime;
-    console.log(
-      "departureTime pred requestom:",
-      departureTime,
-      "timeToSend:",
-      timeToSend
-    );
-
-    setLocalLoading(true);
-    setIsLoading(true);
-    try {
-      const res = await fetch("http://localhost:3001/trip/search", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          from,
-          to,
-          date: format(date, "yyyy-MM-dd"),
-          time: timeToSend,
-          adults: Number(adults),
-        }),
-      });
-
-      const data = await res.json();
-
-      if (res.status === 404) {
-        toast({
-          title: "Žiadne spoje nenájdené",
-          description:
-            "Na zvolený dátum a čas nie sú dostupné žiadne spoje. Skús iný čas alebo deň.",
-          variant: "destructive",
-        });
-        setTrips([]);
-        setAiSummary("");
-        setAiScores([]);
-        return;
-      }
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to fetch trips");
-      }
-
-      setTrips(data.data || []);
-      setAiSummary(data.ai?.summary || "");
-      setAiScores(data.ai?.scores || []);
-
-      // Ak chceš navigovať na výsledky, odkomentuj:
-      // navigate({
-      //   pathname: "/search-results",
-      //   search: `?from=${from}&to=${to}&date=${format(date, "yyyy-MM-dd")}&passengers=${passengers}&luggage=${luggage}`,
-      // });
-    } catch (error: unknown) {
-      let description = "Unable to fetch trips";
-      if (error && typeof error === "object" && "message" in error) {
-        description = String((error as { message?: string }).message);
-      }
-      toast({
-        title: "Trip search failed",
-        description,
-        variant: "destructive",
-      });
-    } finally {
-      setLocalLoading(false);
-      setIsLoading(false);
-    }
-  };
-
-  const getCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      toast({
-        title: "Geolocation not supported",
-        description: "Your browser doesn't support location detection",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsDetectingLocation(true);
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        try {
-          const { latitude, longitude } = position.coords;
-          const response = await fetch(
-            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`
-          );
-
-          const data = await response.json();
-          const locationString = `${data.city || data.locality || "Unknown"}, ${
-            data.countryName
-          }`;
-          setFrom(locationString);
-
-          toast({
-            title: "Location detected",
-            description: `Found your location: ${locationString}`,
-            variant: "default",
-          });
-        } catch (error: unknown) {
-          let description = "Unable to determine your current location";
-          if (error && typeof error === "object" && "message" in error) {
-            description = String((error as { message?: string }).message);
-          }
-          toast({
-            title: "Location detection failed",
-            description: description,
-            variant: "destructive",
-          });
-        } finally {
-          setIsDetectingLocation(false);
-        }
-      },
-      (error: unknown) => {
-        let description = "Unable to determine your current location";
-        if (error && typeof error === "object" && "message" in error) {
-          description = String((error as { message?: string }).message);
-        }
-        toast({
-          title: "Location access denied",
-          description: description,
-          variant: "destructive",
-        });
-        setIsDetectingLocation(false);
-      }
-    );
-  };
+  const { handleSearch, isLoading } = useTripSearch();
 
   return (
-    <Card className="border-0 shadow-xl overflow-hidden bg-white">
-      <CardContent className="p-6 relative z-10">
-        <form onSubmit={handleSearch} className="space-y-6">
+    <Card className="border-0 shadow-xl overflow-hidden bg-white min-h-[240px] lg:min-w-4xl">
+      <CardContent className="p-6 relative z-10 min-w-[240px]">
+        <form
+          onSubmit={(e) =>
+            handleSearch(
+              {
+                from,
+                to,
+                date,
+                departureTime,
+                adults,
+                setTrips,
+                setIsLoading,
+                setAiSummary,
+                setAiScores,
+              },
+              e
+            )
+          }
+          className="space-y-6"
+        >
           {/* Top Row - From and To */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label
-                htmlFor="from"
-                className="font-semibold text-brand-800 flex items-center justify-between"
-              >
-                <span>From</span>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="px-2 text-xs bg-amber-600 text-white hover:text-white hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
-                  onClick={getCurrentLocation}
-                  disabled={isDetectingLocation}
-                >
-                  <Locate className="h-3 w-3 mr-1" />
-                  {isDetectingLocation ? "Detecting..." : "My Location"}
-                </Button>
-              </Label>
+          <div className="flex flex-col lg:flex-row justify-between gap-4">
+            <div className="flex-1">
               <LocationInput
                 id="from"
-                placeholder="Departure city"
+                placeholder="Odkiaľ?..."
                 value={from}
                 onChange={setFrom}
-                icon={<MapPin className="h-4 w-4 text-orange-500" />}
+                icon={
+                  <ArrowRightFromLine className="h-4 w-4 text-orange-500" />
+                }
+                rightIcon={
+                  isDetectingLocation ? (
+                    <span className="animate-spin text-neutral-500">⏳</span>
+                  ) : (
+                    <span
+                      onClick={() =>
+                        !isDetectingLocation &&
+                        getCurrentLocation(
+                          setFrom,
+                          setIsDetectingLocation,
+                          toast
+                        )
+                      }
+                      title="Zisti moju polohu"
+                      className={
+                        isDetectingLocation
+                          ? "pointer-events-none opacity-50"
+                          : "cursor-pointer"
+                      }
+                    >
+                      <Locate className="h-4 w-4 text-neutral-500 hover:text-orange-600 transition-colors" />
+                    </span>
+                  )
+                }
               />
             </div>
-            <div className="space-y-2 translate-y-4.5">
-              <Label htmlFor="to" className="font-semibold text-brand-800">
-                To
-              </Label>
+
+            {/* Switch directions from -  to */}
+            <div className="flex items-center justify-center">
+              <ArrowRightLeft
+                className="h-4 w-4 text-orange-500 cursor-pointer hover:scale-110 transition-transform"
+                onClick={() => {
+                  const tmp = from;
+                  setFrom(to);
+                  setTo(tmp);
+                }}
+              />
+            </div>
+            <div className="flex-1">
               <LocationInput
                 id="to"
-                placeholder="Destination city"
+                placeholder="Kam?..."
                 value={to}
                 onChange={setTo}
-                icon={<MapPin className="h-4 w-4 text-orange-500" />}
+                icon={<ArrowRightToLine className="h-4 w-4 text-orange-500" />}
               />
             </div>
           </div>
@@ -238,14 +140,13 @@ export default function SearchForm({
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
             {/* Date */}
             <div className="space-y-2">
-              <Label className="font-semibold text-brand-800">Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     id="date"
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal border-gray-200 bg-white hover:border-orange-400 hover:bg-orange-50 transition-all",
+                      "w-full justify-start text-left font-normal border-gray-200 bg-white hover:border-orange-400 hover:bg-orange-50 transition-all text-muted-foreground",
                       !date && "text-muted-foreground"
                     )}
                   >
@@ -267,32 +168,34 @@ export default function SearchForm({
                 </PopoverContent>
               </Popover>
             </div>
+
             {/* Departure Time */}
             <div className="space-y-2">
-              <Label className="font-semibold text-brand-800">
-                Departure Time{" "}
-                <span className="text-xs text-orange-500">(required)</span>
-              </Label>
-              <TimePicker value={departureTime} onChange={setDepartureTime} />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 pointer-events-none">
+                  <Clock className="h-4 w-4" />
+                </span>
+                <TimePicker value={departureTime} onChange={setDepartureTime} />
+              </div>
             </div>
+
             {/* Adults */}
             <div className="space-y-2">
-              <Label
-                htmlFor="adults"
-                className="font-semibold text-brand-800 flex items-center gap-1"
-              >
-                <Users className="h-3.5 w-3.5 text-orange-500" /> Adults
-              </Label>
-              <Input
-                id="adults"
-                type="number"
-                min={1}
-                max={10}
-                value={adults}
-                onChange={(e) => setAdults(Number(e.target.value))}
-                placeholder="Number of adults"
-                className="transition-all duration-300 hover:border-orange-400 focus:border-orange-400 bg-white"
-              />
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 pointer-events-none">
+                  <Users className="h-4 w-4" />
+                </span>
+                <Input
+                  id="adults"
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={adults}
+                  onChange={(e) => setAdults(Number(e.target.value))}
+                  placeholder="Počet osôb"
+                  className="pl-10 transition-all duration-300 hover:border-orange-400 focus:border-orange-400 bg-white text-muted-foreground"
+                />
+              </div>
             </div>
           </div>
 
@@ -304,7 +207,7 @@ export default function SearchForm({
             {isLoading ? (
               <Loader2 className="animate-spin h-5 w-5 mr-2" />
             ) : null}
-            {isLoading ? "Hľadám spoje..." : "Find Transport"}
+            {isLoading ? "Hľadám spoje..." : "Vyhľadať spoje"}
             <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
           </Button>
         </form>

@@ -67,12 +67,12 @@
 - [x] Na backende fetchnúť HTML z cp.sk podľa vygenerovaného linku
 - [x] Pomocou cheerio (alebo puppeteer, ak bude treba) vyparsovať všetky spojenia (každý trip)
 - [x] Pre každý trip vyparsovať:
-  - hlavné segmenty (bus/vlak, nie všetky zastávky)
-  - odchod/príchod, stanice, provider, číslo spoja, typ
-  - cenu z "Cestovné" sekcie
+  - [x] hlavné segmenty (bus/vlak, nie všetky zastávky)
+  - [x] odchod/príchod, stanice, provider, číslo spoja, typ
+  - [x] cenu z "Cestovné" sekcie
 - [x] Cenu vynásobiť podľa počtu cestujúcich:
-  - adults = plná cena × adults
-  - children = polovičná cena × children (alebo 0.5 × cena × children)
+  - [x] adults = plná cena × adults
+  - [x] children = polovičná cena × children (alebo 0.5 × cena × children)
 - [x] Vytvoriť a vrátiť TripOption[] na FE (jeden objekt pre každé spojenie na stránke)
 - [x] FE zobrazí tripy v kartách ako doteraz
 
@@ -80,12 +80,10 @@
 
 ## 🔹 Fáza 4 – Finalizácia + UI/UXe
 
-- [ ] BUG: Segmenty v TripOption[] nie vždy nadväzujú (server-side/AI fallback fix)
 - [x] Pridať loading stavy, error handling
 - [x] Vykresliť výber spojení (karta pre každý trip)
-- [ ] Pridať skórovanie výsledkov (voliteľne cez OpenAI)
-- [ ] Odkomunikovať stav frontend ↔ backend cez logy
-- [ ] FE: Pridať filtre na trvanie, cenu, priame spojenia (len 1 line-item)
+- [x] Pridať skórovanie výsledkov (voliteľne cez OpenAI)
+- [x] Odkomunikovať stav frontend ↔ backend cez logy
 - [x] Backend: Nový endpoint na AI odporúčanie najlepšieho tripu (OpenAI sumarizácia)
 - [x] FE: Zobraziť AI odporúčanie a sumarizáciu tripu
 - [x] FE: Auto-complete pre odkial/kam
@@ -104,7 +102,7 @@
 - [x] Pripraviť endpoint/test, ktorý vráti TripOption[] pre túto trasu
 - [x] Všetko ladiť len na tejto konkrétnej trase (deterministický input)
 - [x] Otestovať, že vieme získať všetky potrebné dáta (segmenty, ceny, provider, atď.)
-- [ ] Získanie a vyskladanie samostatných segmentov, teda potrebných spojov-prestupov a pod...
+- [x] Získanie a vyskladanie samostatných segmentov, teda potrebných spojov-prestupov a pod...
 
 **Prečo:**
 
@@ -117,17 +115,20 @@
 
 ---
 
-## 💡Fáza BONUS: Dev UX - Enhancements - Brainstorm
+## 💡Fáza 4 BONUS: Dev UX - Enhancements - Brainstorm
 
 - [x] Pridať prostredie `.env` pre API kľúče
-- [ ] Logger helper (`logStep(msg: string) => socket.send(...)`)
+- [x] Logger helper (`logStep(msg: string) => socket.send(...)`)
 - [x] Pridanie scoringu cez OpenAI
-- [ ] Možnosť filtrovať/prepínať medzi bus/vlak
-- [ ] Loading stav na Search button (spinner)
-- [ ] Autocomplete pre inputy (mock/fake)
-- [ ] Ešte viac UX vychytávok (napr. clear button, copy logy, atď.)
-- [ ] Auto-scroll logov na posledný záznam
-- [ ] Pridať možnosť filtrovať výsledky podľa provideru
+- [x] Loading stav na Search button (spinner)
+
+## 💡Fáza 5: UX / UX - Enhancements - Documentation
+
+- [x] Autocomplete pre inputy (Open Street Map API ?? )
+- [x] Ešte viac UX vychytávok (napr. clear button, copy logy, atď.)
+- [x] Auto-scroll logov na posledný záznam
+- [x] FE: Pridať filtre na trvanie, cenu, priame spojenia (len 1 line-item)
+- [x] Prehodenie inputov Odkiaľ/Kam kliknutím na ikonku ArrowRightLeft
 
 ---
 

@@ -1,12 +1,19 @@
 import AdvancedTripCard from "@/components/trip/AdvancedTripCard";
 import { Loader2 } from "lucide-react";
-import type { TripOption, TripAiScore, TripResultsProps } from "types";
+import type { TripResultsProps } from "types";
+import { useState } from "react";
+import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 
 export default function TripResults({
   trips,
   isLoading,
   aiScores,
 }: TripResultsProps) {
+  const [maxDuration, setMaxDuration] = useState(180); // minút
+  const [maxPrice, setMaxPrice] = useState(30); // €
+  const [directOnly, setDirectOnly] = useState(false);
+
   if (isLoading) {
     return (
       <div className="w-full flex flex-col items-center justify-center py-12">
@@ -19,9 +26,42 @@ export default function TripResults({
   }
   if (!trips.length) return null;
 
+  const filtered = trips.filter(
+    (trip) =>
+      trip.duration <= maxDuration &&
+      trip.price <= maxPrice &&
+      (!directOnly || trip.segments.length === 1)
+  );
+
   return (
     <div className="w-full max-w-3xl mx-auto mt-8 flex flex-col gap-4">
-      {trips.map((trip, i) => {
+      <div className="flex gap-4 mb-4 items-center bg-white p-3 rounded shadow border">
+        <div className="flex flex-col min-w-[120px]">
+          <span className="text-xs text-gray-500 mb-1">Max duration</span>
+          <Slider
+            min={30}
+            max={600}
+            value={[maxDuration]}
+            onValueChange={([v]) => setMaxDuration(v)}
+          />
+          <span className="text-xs mt-1">{maxDuration} min</span>
+        </div>
+        <div className="flex flex-col min-w-[120px]">
+          <span className="text-xs text-gray-500 mb-1">Max price</span>
+          <Slider
+            min={1}
+            max={100}
+            value={[maxPrice]}
+            onValueChange={([v]) => setMaxPrice(v)}
+          />
+          <span className="text-xs mt-1">{maxPrice} €</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Switch checked={directOnly} onCheckedChange={setDirectOnly} />
+          <span className="text-xs">Only direct</span>
+        </div>
+      </div>
+      {filtered.map((trip, i) => {
         // LOGUJEME TRIP A SEGMENTY
         console.log(`Trip #${i + 1}:`, trip);
         trip.segments.forEach((segment, idx) => {
@@ -33,37 +73,7 @@ export default function TripResults({
         const score = aiScores?.find((s) => s.index === i);
         return (
           <div key={i}>
-            <AdvancedTripCard
-              id={String(i)}
-              from={trip.from.city}
-              to={trip.to.city}
-              departureTime={trip.from.time}
-              arrivalTime={trip.to.time}
-              price={0} // demo
-              currency="€" // demo
-              totalDuration={trip.duration + " min"}
-              segments={trip.segments.map((seg) => ({
-                type: seg.type === "bus" ? "bus" : "train",
-                from: seg.from ?? "",
-                to: seg.to ?? "",
-                departureTime: seg.stops?.[0]?.time ?? "",
-                arrivalTime: seg.stops?.[seg.stops.length - 1]?.time ?? "",
-                duration:
-                  seg.stops && seg.stops.length > 1
-                    ? `${
-                        seg.stops[0]?.time &&
-                        seg.stops[seg.stops.length - 1]?.time
-                          ? seg.stops[0].time +
-                            " - " +
-                            seg.stops[seg.stops.length - 1].time
-                          : ""
-                      }`
-                    : "",
-                carrier: seg.provider ?? trip.provider.name,
-              }))}
-              co2={0} // demo
-              isDemo
-            />
+            <AdvancedTripCard trip={trip} isDemo />
             {score && (
               <div className="flex gap-2 mt-2 mb-4">
                 <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs font-semibold">

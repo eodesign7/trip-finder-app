@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Clock } from "lucide-react";
 
 interface TimePickerProps {
   value: string;
@@ -53,7 +54,7 @@ export default function TimePicker({ value, onChange }: TimePickerProps) {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full relative">
       <Label htmlFor="time-picker-btn" className="sr-only">
         Select time
       </Label>
@@ -62,9 +63,12 @@ export default function TimePicker({ value, onChange }: TimePickerProps) {
           <Button
             id="time-picker-btn"
             variant="outline"
-            className="w-full justify-start text-left font-normal border-gray-200 bg-white hover:border-orange-400 hover:bg-orange-50 transition-all text-lg px-3 py-2"
+            className="w-full justify-start text-left font-normal border-gray-200 bg-white hover:border-orange-400 hover:bg-orange-50 transition-all text-md text-muted-foreground px-3 py-2 pl-10"
             aria-label="Select time"
           >
+            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 pointer-events-none">
+              <Clock className="h-4 w-4" />
+            </span>
             {`${selectedHour.toString().padStart(2, "0")}:${selectedMinute
               .toString()
               .padStart(2, "0")}`}
@@ -80,7 +84,7 @@ export default function TimePicker({ value, onChange }: TimePickerProps) {
               {hours.map((h) => (
                 <button
                   key={h}
-                  className={`hour px-6 py-2 my-1 mx-1 rounded-lg text-lg text-center transition-all duration-150
+                  className={`hour px-6 py-2 my-1 mx-1 rounded-lg text-md text-center transition-all duration-150
                     ${
                       h === selectedHour
                         ? "bg-orange-50 text-orange-600 font-bold shadow-sm"
