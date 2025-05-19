@@ -1,33 +1,6 @@
 import AdvancedTripCard from "@/components/trip/AdvancedTripCard";
 import { Loader2 } from "lucide-react";
-
-type TripOption = {
-  from: { time: string; station: string; city: string };
-  to: { time: string; station: string; city: string };
-  duration: number;
-  icon: string;
-  provider: { name: string; url: string };
-  line: string;
-  segments: Array<{
-    type?: string;
-    from?: string;
-    to?: string;
-    line?: string;
-    provider?: string;
-    stops?: Array<{ time: string; station: string }>;
-  }>;
-};
-
-type TripResultsProps = {
-  trips: TripOption[];
-  isLoading?: boolean;
-  aiScores?: Array<{
-    index: number;
-    fast: number;
-    cheap: number;
-    comfy: number;
-  }>;
-};
+import type { TripOption, TripAiScore, TripResultsProps } from "types";
 
 export default function TripResults({
   trips,

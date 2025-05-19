@@ -21,14 +21,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import LocationInput from "@/components/search/LocationInput";
 import { toast } from "@/hooks/use-toast";
-import type { TripOption } from "types";
+import type { TripAiScore, TripOption } from "types";
 import TimePicker from "@/components/ui/TimePicker";
 
 type SearchFormProps = {
   setTrips: React.Dispatch<React.SetStateAction<TripOption[]>>;
   setIsLoading: (loading: boolean) => void;
   setAiSummary: (summary: string) => void;
-  setAiScores: (scores: any[]) => void;
+  setAiScores: (scores: TripAiScore[]) => void;
 };
 
 export default function SearchForm({
@@ -273,11 +273,7 @@ export default function SearchForm({
                 Departure Time{" "}
                 <span className="text-xs text-orange-500">(required)</span>
               </Label>
-              <TimePicker
-                value={departureTime}
-                onChange={setDepartureTime}
-                placeholder="Select departure time (required)"
-              />
+              <TimePicker value={departureTime} onChange={setDepartureTime} />
             </div>
             {/* Adults */}
             <div className="space-y-2">

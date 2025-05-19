@@ -68,3 +68,21 @@ export type TripCardProps = {
     provider?: string;
   }>;
 };
+
+export type TripAiScore = {
+  index: number;
+  fast: number;
+  cheap: number;
+  comfy: number;
+};
+
+export type TripAiResult = {
+  scores: TripAiScore[];
+  summary: string;
+};
+
+export type TripResultsProps = {
+  trips: TripOption[];
+  isLoading?: boolean;
+  aiScores?: TripAiScore[];
+};

@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer";
+import { logToAllClients } from "../lib/helpers";
 
 export async function getCpHtmlFixed() {
   const url =
@@ -120,7 +121,13 @@ export async function getCpHtmlDynamic({
   const url = `https://cp.sk/vlakbus/spojenie/vysledky/?f=${encodeCp(
     from
   )}&t=${encodeCp(to)}&date=${formatDateForCp(date)}&time=${time}&submit=true`;
-  console.log(`[getter] Otváram dynamickú stránku: ${url}`);
+  logToAllClients(
+    JSON.stringify({
+      status: 200,
+      message: `[getter] Otváram dynamickú stránku: ${url}`,
+      time: new Date().toISOString(),
+    })
+  );
   const browser = await puppeteer.launch({ headless: true });
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "networkidle2" });
@@ -150,7 +157,15 @@ export async function getCpHtmlDynamic({
     await new Promise((res) => setTimeout(res, 1000));
     tries++;
   }
-  console.log("[getter] .price-value texts:", priceDebug.texts);
+  logToAllClients(
+    JSON.stringify({
+      status: 200,
+      message: `[getter] .price-value: ${
+        priceDebug.texts.filter(Boolean).length
+      } cien nájdených.`,
+      time: new Date().toISOString(),
+    })
+  );
 
   // Debug: vypíš všetky elementy, ktoré obsahujú cenu v EUR
   const allPrices = await page.evaluate(() => {
@@ -158,7 +173,13 @@ export async function getCpHtmlDynamic({
       .filter((el) => el.textContent && el.textContent.match(/\d+\s*EUR/))
       .map((el) => el.outerHTML);
   });
-  console.log("[getter] Všetky elementy s cenou EUR:", allPrices);
+  logToAllClients(
+    JSON.stringify({
+      status: 200,
+      message: `[getter] Všetky elementy s cenou EUR: ${allPrices.length} elementov.`,
+      time: new Date().toISOString(),
+    })
+  );
 
   // Klikaj max 2x na "Neskoršie spojenie"
   for (let i = 0; i < 2; i++) {
@@ -177,9 +198,21 @@ export async function getCpHtmlDynamic({
       try {
         await allLinks[idx].click({ delay: 100 });
         await new Promise((res) => setTimeout(res, 1500));
-        console.log(`[getter] Klikol som na 'Neskoršie spojenie' #${i + 1}`);
-      } catch (err) {
-        console.log(`[getter] Klik na 'Neskoršie spojenie' zlyhal:`, err);
+        logToAllClients(
+          JSON.stringify({
+            status: 200,
+            message: `[getter] Klikol som na 'Neskoršie spojenie' #${i + 1}`,
+            time: new Date().toISOString(),
+          })
+        );
+      } catch {
+        logToAllClients(
+          JSON.stringify({
+            status: 400,
+            message: `[getter] Klik na 'Neskoršie spojenie' zlyhal`,
+            time: new Date().toISOString(),
+          })
+        );
         break;
       }
     } else {
@@ -205,9 +238,23 @@ export async function getCpHtmlDynamic({
       return priceText;
     });
   });
-  console.log("[getter] Ceny tripov:", prices);
+  logToAllClients(
+    JSON.stringify({
+      status: 200,
+      message: `[getter] Ceny tripov: ${
+        prices.filter(Boolean).length
+      } nájdených.`,
+      time: new Date().toISOString(),
+    })
+  );
 
   await browser.close();
-  console.log(`[getter] Puppeteer zavretý, HTML pripravené.`);
+  logToAllClients(
+    JSON.stringify({
+      status: 200,
+      message: `[getter] Puppeteer zavretý, HTML pripravené.`,
+      time: new Date().toISOString(),
+    })
+  );
   return html;
 }
