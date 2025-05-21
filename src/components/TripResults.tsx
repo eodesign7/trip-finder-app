@@ -9,11 +9,9 @@ export default function TripResults({
   trips,
   isLoading,
   aiScores,
-}: TripResultsProps) {
-  const [maxDuration, setMaxDuration] = useState(180); // minút
-  const [maxPrice, setMaxPrice] = useState(30); // €
-  const [directOnly, setDirectOnly] = useState(false);
-
+  aiSummary,
+  hasSearched,
+}: TripResultsProps & { aiSummary?: string; hasSearched: boolean }) {
   if (isLoading) {
     return (
       <div className="w-full flex flex-col items-center justify-center py-12">
@@ -24,44 +22,25 @@ export default function TripResults({
       </div>
     );
   }
-  if (!trips.length) return null;
-
-  const filtered = trips.filter(
-    (trip) =>
-      trip.duration <= maxDuration &&
-      trip.price <= maxPrice &&
-      (!directOnly || trip.segments.length === 1)
-  );
-
-  return (
-    <div className="w-full max-w-3xl mx-auto mt-8 flex flex-col gap-4">
-      <div className="flex gap-4 mb-4 items-center bg-white p-3 rounded shadow border">
-        <div className="flex flex-col min-w-[120px]">
-          <span className="text-xs text-gray-500 mb-1">Max duration</span>
-          <Slider
-            min={30}
-            max={600}
-            value={[maxDuration]}
-            onValueChange={([v]) => setMaxDuration(v)}
-          />
-          <span className="text-xs mt-1">{maxDuration} min</span>
+  if (!hasSearched) return null;
+  if (hasSearched && !trips.length) {
+    return (
+      <div className="w-full flex flex-col items-center justify-center py-12">
+        <div className="text-2xl text-sky-700 font-bold mb-2">
+          Žiadne spoje nenájdené
         </div>
-        <div className="flex flex-col min-w-[120px]">
-          <span className="text-xs text-gray-500 mb-1">Max price</span>
-          <Slider
-            min={1}
-            max={100}
-            value={[maxPrice]}
-            onValueChange={([v]) => setMaxPrice(v)}
-          />
-          <span className="text-xs mt-1">{maxPrice} €</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Switch checked={directOnly} onCheckedChange={setDirectOnly} />
-          <span className="text-xs">Only direct</span>
+        <div className="text-sky-500 text-lg mb-4">
+          {aiSummary ||
+            "Hm, vyzerá to tak, že na dnes už nie sú spoje. Skús to opäť zajtra alebo zmeň parametre vyhľadávania."}
         </div>
       </div>
-      {filtered.map((trip, i) => {
+    );
+  }
+
+  // Už nefiltrujeme, zobrazíme všetky trips
+  return (
+    <div className="w-full max-w-3xl mx-auto mt-8 flex flex-col gap-4">
+      {trips.map((trip, i) => {
         // LOGUJEME TRIP A SEGMENTY
         console.log(`Trip #${i + 1}:`, trip);
         trip.segments.forEach((segment, idx) => {

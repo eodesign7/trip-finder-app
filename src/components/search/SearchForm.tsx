@@ -35,6 +35,7 @@ type SearchFormProps = {
   setIsLoading: (loading: boolean) => void;
   setAiSummary: (summary: string) => void;
   setAiScores: (scores: TripAiScore[]) => void;
+  setHasSearched: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export default function SearchForm({
@@ -42,6 +43,7 @@ export default function SearchForm({
   setIsLoading,
   setAiSummary,
   setAiScores,
+  setHasSearched,
 }: SearchFormProps) {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -57,7 +59,7 @@ export default function SearchForm({
 
   return (
     <Card className="border-0 shadow-xl overflow-hidden bg-white min-h-[240px] lg:min-w-4xl">
-      <CardContent className="p-6 relative z-10 min-w-[240px]">
+      <CardContent className="p-6 relative z-30 min-w-[240px]">
         <form
           onSubmit={(e) =>
             handleSearch(
@@ -71,6 +73,7 @@ export default function SearchForm({
                 setIsLoading,
                 setAiSummary,
                 setAiScores,
+                setHasSearched,
               },
               e
             )

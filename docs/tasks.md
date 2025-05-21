@@ -129,6 +129,14 @@
 - [x] Auto-scroll logov na posledný záznam
 - [x] FE: Pridať filtre na trvanie, cenu, priame spojenia (len 1 line-item)
 - [x] Prehodenie inputov Odkiaľ/Kam kliknutím na ikonku ArrowRightLeft
+- [x] Vylepšiť UI AdvandcedTripCard komponent
+- [x] ! trips Vratit, nevolat API, "Hm, vyzera to tak, ze na dnes uz nie su spoje, skus to opat zajtra"
+- [ ] Zabavit usera pocas loading stavu... ako???
+- [ ] Fallbabk na "Ziadne spoje" ak na dnes nie su spoje - BE Sprava + AI hardcoded sprava
+- [ ] Vratit vsetky spoje nie len 3
+- [ ] Vymenit hlavny obrazok za vlastny
+- [ ] Doplniť dokumentáciu
+- [ ] Footer - Copy, Docs, Surce(GitHub Repo)
 
 ---
 

@@ -14,6 +14,7 @@ interface UseTripSearchProps {
   setIsLoading: (loading: boolean) => void;
   setAiSummary: (summary: string) => void;
   setAiScores: (scores: TripAiScore[]) => void;
+  setHasSearched: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export function useTripSearch() {
@@ -30,10 +31,12 @@ export function useTripSearch() {
       setIsLoading,
       setAiSummary,
       setAiScores,
+      setHasSearched,
     }: UseTripSearchProps,
     e: React.FormEvent
   ) {
     e.preventDefault();
+    setHasSearched(true);
 
     if (!from || !to || !date) {
       toast({
@@ -77,15 +80,19 @@ export function useTripSearch() {
       });
       const data = await res.json();
       if (res.status === 404) {
+        setTrips([]);
+        setAiSummary(
+          data.ai?.summary || data.message || "Žiadne spoje nenájdené."
+        );
+        setAiScores([]);
         toast({
           title: "Žiadne spoje nenájdené",
           description:
+            data.ai?.summary ||
+            data.message ||
             "Na zvolený dátum a čas nie sú dostupné žiadne spoje. Skús iný čas alebo deň.",
           variant: "destructive",
         });
-        setTrips([]);
-        setAiSummary("");
-        setAiScores([]);
         return;
       }
       if (!res.ok) {

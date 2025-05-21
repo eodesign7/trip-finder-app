@@ -16,7 +16,6 @@ export function parseTripsFromHtml(html: string, today: string): TripOption[] {
     todayShort = today.match(/\d{1,2}\.\d{1,2}\./)?.[0] || today;
   }
   $(".box.connection.detail-box").each((i, el) => {
-    if (trips.length >= 3) return false;
     // Získaj dátum tripu
     const dateAfter = $(el).find(".date-after").text().trim();
     const dateOnly = dateAfter.match(/\d{1,2}\.\d{1,2}\./)?.[0] || dateAfter;

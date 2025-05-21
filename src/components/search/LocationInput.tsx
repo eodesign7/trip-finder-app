@@ -114,7 +114,7 @@ export default function LocationInput({
           placeholder={placeholder}
           className={`${
             icon ? "pl-10" : ""
-          } transition-all duration-300 hover:border-amber-500 focus:border-amber-500`}
+          } transition-all duration-300 hover:border-amber-500 focus-within:bg-white focus:border-amber-500`}
           onBlur={() => setTimeout(() => setIsOpen(false), 150)}
         />
         {rightIcon && (
@@ -126,7 +126,7 @@ export default function LocationInput({
       </div>
 
       {isOpen && suggestions.length > 0 && (
-        <div className="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-auto animate-fade-in">
+        <div className="absolute z-20 mt-2 w-full bg-white shadow-lg rounded-md border border-gray-200 animate-fade-in">
           {suggestions.map((suggestion, index) => {
             const parts = suggestion.display_name.split(",");
             let region = parts[1]?.replace(/okres/i, "").trim() || "";
@@ -135,7 +135,7 @@ export default function LocationInput({
             return (
               <div
                 key={index}
-                className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-sm transition-colors duration-150"
+                className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-start text-sm transition-colors duration-150"
                 onClick={() => handleSelectSuggestion(suggestion)}
               >
                 {city}

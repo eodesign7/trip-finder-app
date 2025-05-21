@@ -14,24 +14,26 @@ export default function App() {
   const [aiSummary, setAiSummary] = useState<string>("");
   const [aiScores, setAiScores] = useState<TripAiScore[]>([]);
   const [showLogPanel, setShowLogPanel] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+
   return (
     <DayPickerProvider initialProps={{ mode: "single" }}>
       <main className="min-h-screen p-0 m-0">
         {/* Hero image */}
-        <div className="absolute top-0 left-0 w-full h-[528px] z-0">
+        <div className="absolute top-0 left-0 w-full h-[720px] z-0">
           <img
-            src="hero_header.jpg"
+            src="hero3.png"
             alt="hero_header"
             className="w-full h-full object-cover object-top"
           />
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white opacity-50" />
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex flex-col items-center pt-[180px] ">
-          <h1 className="text-6xl md:text-[8rem] font-extrabold mb-6 text-white drop-shadow-lg">
-            <span className="text-[var(--omio-red)]">.</span>Trips
+        <div className="relative z-20 flex flex-col items-center pt-[80px] ">
+          <h1 className="text-6xl md:text-[8rem] font-extrabold mb-12 text-white drop-shadow-lg">
+            <span className="text-orange-500">.</span>Trips
           </h1>
           <div className="w-full flex flex-col items-center justify-center gap-4">
             <SearchForm
@@ -39,6 +41,7 @@ export default function App() {
               setIsLoading={setIsLoading}
               setAiSummary={setAiSummary}
               setAiScores={setAiScores}
+              setHasSearched={setHasSearched}
             />
             <Button
               variant="link"
@@ -59,9 +62,30 @@ export default function App() {
             trips={trips}
             isLoading={isLoading}
             aiScores={aiScores}
+            aiSummary={aiSummary}
+            hasSearched={hasSearched}
           />
         </div>
       </main>
+      <footer className="w-full bg-white/80 border-t border-slate-200 py-4 mt-12 flex flex-col md:flex-row items-center justify-center gap-4 text-slate-500 text-sm z-30">
+        <span>©{new Date().getFullYear()} .Trips | Made with ❤️ by eoDev.</span>
+        <span className="mx-2">·</span>
+        <a
+          href="https://github.com/erikxxx/trip-finder-app"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-orange-600 transition-colors text-neutral-600"
+        >
+          GitHub
+        </a>
+        <span className="mx-2">·</span>
+        <a
+          href="#"
+          className="hover:text-orange-600 transition-colors text-neutral-600"
+        >
+          Dokumentácia (čoskoro)
+        </a>
+      </footer>
     </DayPickerProvider>
   );
 }

@@ -171,22 +171,16 @@ export async function tripCpScrapeController(req: Request, res: Response) {
 
     // --- Ak parser nenájde žiadne tripy, vráť 404 ---
     if (!tripsToSend.length) {
-      logToAllClients(
-        JSON.stringify({
-          status: 400,
-          message: `[tripCpScrapeController] Žiadne tripy po filtri.`,
-          time: new Date().toISOString(),
-        })
-      );
-      logToAllClients(
-        JSON.stringify({
-          status: 400,
-          message: `[tripCpScrapeController] Žiadne spoje na zvolený dátum ani najbližší možný dátum.`,
-          time: new Date().toISOString(),
-        })
-      );
       return res.status(404).json({
-        message: "No trips found for selected date/time or next available day.",
+        noTrips: true,
+        message:
+          "Hm, vyzerá to tak, že na dnes už nie sú spoje. Skús to opäť zajtra alebo zmeň parametre vyhľadávania.",
+        ai: {
+          summary:
+            "Dnes už žiadne spoje nejdú. Skús to opäť zajtra, alebo pohraj sa s časom a dátumom. Ak chceš tip: najviac spojov býva ráno a okolo obeda. Držím palce! 🚄😉",
+          scores: [],
+        },
+        data: [],
       });
     }
 
