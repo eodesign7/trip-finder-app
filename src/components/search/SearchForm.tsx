@@ -50,7 +50,6 @@ export default function SearchForm({
   const now = new Date();
   const pad = (n: number) => n.toString().padStart(2, "0");
   const defaultTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
-
   const [date, setDate] = useState<Date>(now);
   const [departureTime, setDepartureTime] = useState<string>(defaultTime);
   const [adults, setAdults] = useState(1);
@@ -80,7 +79,6 @@ export default function SearchForm({
           }
           className="space-y-6"
         >
-          {/* Top Row - From and To */}
           <div className="flex flex-col lg:flex-row justify-between gap-4">
             <div className="flex-1">
               <LocationInput
@@ -117,8 +115,6 @@ export default function SearchForm({
                 }
               />
             </div>
-
-            {/* Switch directions from -  to */}
             <div className="flex items-center justify-center">
               <ArrowRightLeft
                 className="h-4 w-4 text-orange-500 cursor-pointer hover:scale-110 transition-transform"
@@ -139,9 +135,7 @@ export default function SearchForm({
               />
             </div>
           </div>
-
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full">
-            {/* Date */}
             <div className="space-y-2">
               <Popover>
                 <PopoverTrigger asChild>
@@ -171,8 +165,6 @@ export default function SearchForm({
                 </PopoverContent>
               </Popover>
             </div>
-
-            {/* Departure Time */}
             <div className="space-y-2">
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 pointer-events-none">
@@ -181,8 +173,6 @@ export default function SearchForm({
                 <TimePicker value={departureTime} onChange={setDepartureTime} />
               </div>
             </div>
-
-            {/* Adults */}
             <div className="space-y-2">
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500 pointer-events-none">
@@ -201,7 +191,6 @@ export default function SearchForm({
               </div>
             </div>
           </div>
-
           <Button
             type="submit"
             className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium px-6 py-3 h-auto transform hover:scale-[1.02] transition-all duration-300 shadow-md hover:shadow-xl group flex items-center justify-center"

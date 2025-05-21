@@ -1,5 +1,4 @@
 import "./App.css";
-// import TripForm from "@/components/TripForm";
 import TripResults from "@/components/TripResults";
 import { useState } from "react";
 import type { TripOption, TripAiScore } from "types";
@@ -7,6 +6,7 @@ import SearchForm from "./components/search/SearchForm";
 import LogPanel from "./components/LogPanel";
 import { DayPickerProvider } from "react-day-picker";
 import { Button } from "@/components/ui/button";
+import AiSummary from "@/components/AiSummary";
 
 export default function App() {
   const [trips, setTrips] = useState<TripOption[]>([]);
@@ -19,18 +19,14 @@ export default function App() {
   return (
     <DayPickerProvider initialProps={{ mode: "single" }}>
       <main className="min-h-screen p-0 m-0">
-        {/* Hero image */}
         <div className="absolute top-0 left-0 w-full h-[720px] z-0">
           <img
             src="hero3.png"
             alt="hero_header"
             className="w-full h-full object-cover object-top"
           />
-          {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white opacity-50" />
         </div>
-
-        {/* Content */}
         <div className="relative z-20 flex flex-col items-center pt-[80px] ">
           <h1 className="text-6xl md:text-[8rem] font-extrabold mb-12 text-white drop-shadow-lg">
             <span className="text-orange-500">.</span>Trips
@@ -53,11 +49,7 @@ export default function App() {
             </Button>
             {showLogPanel && <LogPanel />}
           </div>
-          {aiSummary && (
-            <div className="w-full max-w-3xl mx-auto mt-4 mb-2 p-4 bg-orange-50 border-l-4 border-orange-400 text-orange-900 rounded shadow">
-              <strong>AI odporúčanie:</strong> {aiSummary}
-            </div>
-          )}
+          <AiSummary aiSummary={aiSummary} />
           <TripResults
             trips={trips}
             isLoading={isLoading}

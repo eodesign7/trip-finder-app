@@ -5,7 +5,7 @@ import { parseTripsFromHtml } from "../scrapper/trip.constructor";
 import type { TripOption } from "../../../types";
 import { buildCpSmartLink } from "../scrapper/url-constructor";
 import { formatTodayForConstructor } from "../scrapper/date-helpers";
-import { logToAllClients } from "../lib/helpers";
+import { logStep } from "../lib/helpers";
 
 // Handler na generovanie smart-linku na cp.sk
 export async function tripCpLinkController(req: Request, res: Response) {
@@ -18,21 +18,8 @@ export async function tripCpLinkController(req: Request, res: Response) {
 }
 
 export async function tripCpScrapeController(req: Request, res: Response) {
-  logToAllClients(
-    JSON.stringify({
-      status: 200,
-      message: "[tripCpScrapeController] Začínam spracovanie požiadavky...",
-      time: new Date().toISOString(),
-    })
-  );
-  logToAllClients(
-    JSON.stringify({
-      status: 200,
-      message:
-        "[tripCpScrapeController] REQ BODY RAW: " + JSON.stringify(req.body),
-      time: new Date().toISOString(),
-    })
-  );
+  logStep("[tripCpScrapeController] Začínam spracovanie požiadavky...");
+  logStep(`[tripCpScrapeController] REQ BODY RAW: ${JSON.stringify(req.body)}`);
   console.log(
     "[tripCpScrapeController] REQ BODY (stringified):",
     JSON.stringify(req.body, null, 2)
@@ -40,76 +27,40 @@ export async function tripCpScrapeController(req: Request, res: Response) {
   const { from, to, date } = req.body;
   let time = req.body.time;
   if (!time) {
-    logToAllClients(
-      JSON.stringify({
-        status: 400,
-        message: `[tripCpScrapeController] time neprišiel alebo je prázdny! Typ: ${typeof req
-          .body.time}, Hodnota: ${req.body.time}`,
-        time: new Date().toISOString(),
-      })
+    logStep(
+      `[tripCpScrapeController] time neprišiel alebo je prázdny! Typ: ${typeof req
+        .body.time}, Hodnota: ${req.body.time}`,
+      400
     );
     time = "00:00"; // fallback, ale FE by mal vždy poslať čas!
     console.log("[tripCpScrapeController] time neprišiel, nastavujem na 00:00");
   }
-  logToAllClients(
-    JSON.stringify({
-      status: 200,
-      message: `[tripCpScrapeController] Params: from=${from}, to=${to}, date=${date}, time=${time}`,
-      time: new Date().toISOString(),
-    })
+  logStep(
+    `[tripCpScrapeController] Params: from=${from}, to=${to}, date=${date}, time=${time}`
   );
 
   let trips: TripOption[] = [];
   let aiResult = null;
   let aiResultToSend = null;
   try {
-    logToAllClients(
-      JSON.stringify({
-        status: 200,
-        message: "[tripCpScrapeController] Získavam HTML z cp.sk...",
-        time: new Date().toISOString(),
-      })
-    );
+    logStep("[tripCpScrapeController] Získavam HTML z cp.sk...");
     const html = await getCpHtmlDynamic({ from, to, date, time });
-    logToAllClients(
-      JSON.stringify({
-        status: 200,
-        message:
-          "[tripCpScrapeController] HTML načítané, idem parsovať tripy...",
-        time: new Date().toISOString(),
-      })
-    );
+    logStep("[tripCpScrapeController] HTML načítané, idem parsovať tripy...");
     const today = formatTodayForConstructor(date);
     trips = parseTripsFromHtml(html, today);
-    logToAllClients(
-      JSON.stringify({
-        status: 200,
-        message: `[tripCpScrapeController] Našiel som ${trips.length} tripov.`,
-        time: new Date().toISOString(),
-      })
-    );
+    logStep(`[tripCpScrapeController] Našiel som ${trips.length} tripov.`);
 
     // --- LOGY pred filterom ---
     const totalSegments = trips.reduce(
       (acc, t) => acc + (t.segments?.length || 0),
       0
     );
-    logToAllClients(
-      JSON.stringify({
-        status: 200,
-        message: `[tripCpScrapeController] Pred filterom: ${trips.length} tripov, ${totalSegments} segmentov.`,
-        time: new Date().toISOString(),
-      })
+    logStep(
+      `[tripCpScrapeController] Pred filterom: ${trips.length} tripov, ${totalSegments} segmentov.`
     );
 
-    // --- AI scoring & summary ---
-    logToAllClients(
-      JSON.stringify({
-        status: 200,
-        message: "[tripCpScrapeController] AI scoring...",
-        time: new Date().toISOString(),
-      })
-    );
+    // --- AI Scoring & Summary ---
+    logStep("[tripCpScrapeController] AI scoring...");
     try {
       aiResult = await sendTripScoringRequest(req.body, trips);
     } catch (err) {
@@ -140,20 +91,10 @@ export async function tripCpScrapeController(req: Request, res: Response) {
       }
       return true;
     }
-    logToAllClients(
-      JSON.stringify({
-        status: 200,
-        message: `[tripCpScrapeController] Po AI scoringu, filter segmentov...`,
-        time: new Date().toISOString(),
-      })
-    );
+    logStep(`[tripCpScrapeController] Po AI scoringu, filter segmentov...`);
     const tripsToSend = trips.filter(areSegmentsContinuous);
-    logToAllClients(
-      JSON.stringify({
-        status: 200,
-        message: `[tripCpScrapeController] Po filtri: ${tripsToSend.length} tripov zostáva.`,
-        time: new Date().toISOString(),
-      })
+    logStep(
+      `[tripCpScrapeController] Po filtri: ${tripsToSend.length} tripov zostáva.`
     );
 
     // --- LOGY po filteri ---
@@ -161,12 +102,8 @@ export async function tripCpScrapeController(req: Request, res: Response) {
       (acc, t) => acc + (t.segments?.length || 0),
       0
     );
-    logToAllClients(
-      JSON.stringify({
-        status: 200,
-        message: `[tripCpScrapeController] Po filteri: ${tripsToSend.length} tripov, ${totalSegmentsFiltered} segmentov.`,
-        time: new Date().toISOString(),
-      })
+    logStep(
+      `[tripCpScrapeController] Po filteri: ${tripsToSend.length} tripov, ${totalSegmentsFiltered} segmentov.`
     );
 
     // --- Ak parser nenájde žiadne tripy, vráť 404 ---
@@ -192,12 +129,8 @@ export async function tripCpScrapeController(req: Request, res: Response) {
       formatTodayForConstructor(date).match(/\d{1,2}\.\d{1,2}\./)?.[0];
     const actualShort = actualDate.match(/\d{1,2}\.\d{1,2}\./)?.[0];
     if (todayShort && actualShort && todayShort !== actualShort) {
-      logToAllClients(
-        JSON.stringify({
-          status: 200,
-          message: `[tripCpScrapeController] Tripy sú na najbližší možný dátum: ${actualDate}`,
-          time: new Date().toISOString(),
-        })
+      logStep(
+        `[tripCpScrapeController] Tripy sú na najbližší možný dátum: ${actualDate}`
       );
       aiResultToSend = aiResult;
       res.status(200).json({
@@ -212,23 +145,8 @@ export async function tripCpScrapeController(req: Request, res: Response) {
       return;
     }
 
-    // Logovanie výsledných dát do konzoly servera
-    logToAllClients(
-      JSON.stringify({
-        status: 200,
-        message: `[tripCpScrapeController] Posielam trips na FE.`,
-        time: new Date().toISOString(),
-      })
-    );
-
-    // 6. Odošli výsledok na FE
-    logToAllClients(
-      JSON.stringify({
-        status: 200,
-        message: `[tripCpScrapeController] Hotovo, posielam výsledok na FE.`,
-        time: new Date().toISOString(),
-      })
-    );
+    logStep("[tripCpScrapeController] Posielam trips na FE.");
+    logStep("[tripCpScrapeController] Hotovo, posielam výsledok na FE.");
     aiResultToSend = aiResult;
     res.status(200).json({
       message: "Scraped trips",
@@ -241,21 +159,10 @@ export async function tripCpScrapeController(req: Request, res: Response) {
     });
     return;
   } catch (err) {
-    logToAllClients(
-      JSON.stringify({
-        status: 500,
-        message: `[tripCpScrapeController] ERROR: ${String(err)}`,
-        time: new Date().toISOString(),
-      })
-    );
-    logToAllClients(
-      JSON.stringify({
-        status: 500,
-        message: "Failed to fetch cp.sk via orchestrator",
-        error: String(err),
-        time: new Date().toISOString(),
-      })
-    );
+    logStep(`[tripCpScrapeController] ERROR: ${String(err)}`, 500);
+    logStep("Failed to fetch cp.sk via orchestrator", 500, {
+      error: String(err),
+    });
     return res.status(500).json({
       message: "Failed to fetch cp.sk via orchestrator",
       error: String(err),

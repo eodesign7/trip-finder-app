@@ -12,3 +12,19 @@ export function logToAllClients(message: string) {
     }
   }
 }
+
+// Helper na jednoduché websocket logovanie s jednotným formátom
+export function logStep(
+  message: string,
+  status: number = 200,
+  extra?: Record<string, any>
+) {
+  logToAllClients(
+    JSON.stringify({
+      status,
+      message,
+      time: new Date().toISOString(),
+      ...extra,
+    })
+  );
+}

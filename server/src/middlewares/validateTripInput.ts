@@ -23,7 +23,6 @@ export function validateTripInput(
     });
   }
 
-  // Ak je validácia OK, prepíš req.body na typovaný objekt
   req.body = parseResult.data;
   next();
 }

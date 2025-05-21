@@ -1,9 +1,6 @@
 import AdvancedTripCard from "@/components/trip/AdvancedTripCard";
 import { Loader2 } from "lucide-react";
 import type { TripResultsProps } from "types";
-import { useState } from "react";
-import { Slider } from "@/components/ui/slider";
-import { Switch } from "@/components/ui/switch";
 
 export default function TripResults({
   trips,
@@ -36,19 +33,9 @@ export default function TripResults({
       </div>
     );
   }
-
-  // Už nefiltrujeme, zobrazíme všetky trips
   return (
-    <div className="w-full max-w-3xl mx-auto mt-8 flex flex-col gap-4">
+    <div className="w-full max-w-5xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
       {trips.map((trip, i) => {
-        // LOGUJEME TRIP A SEGMENTY
-        console.log(`Trip #${i + 1}:`, trip);
-        trip.segments.forEach((segment, idx) => {
-          console.log(
-            `Trip #${i + 1} Segment #${idx + 1} stops:`,
-            segment.stops?.map((s) => s.station)
-          );
-        });
         const score = aiScores?.find((s) => s.index === i);
         return (
           <div key={i}>
@@ -66,9 +53,6 @@ export default function TripResults({
                 </span>
               </div>
             )}
-            <div className="transition-all duration-300 origin-top overflow-hidden scale-y-0 opacity-0 max-h-0">
-              {/* Expandované detaily sú vypnuté */}
-            </div>
           </div>
         );
       })}

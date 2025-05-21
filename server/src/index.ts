@@ -7,11 +7,10 @@ import { clients } from "./lib/helpers";
 import tripRoutes from "./routes/trip.routes";
 
 const app = express();
+const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
 
 app.use(cors());
 app.use(express.json());
-
-const PORT = 3001;
 
 app.get("/", (_req, res) => {
   res.send("OK");
@@ -19,7 +18,7 @@ app.get("/", (_req, res) => {
 
 app.use(tripRoutes);
 
-const server = app.listen(3001, () => {
+const server = app.listen(PORT, () => {
   console.log(`✅ Server is running on http://localhost:${PORT}`);
 });
 
@@ -27,7 +26,6 @@ const wss = new WebSocketServer({ server });
 
 wss.on("connection", (ws) => {
   clients.add(ws);
-
   ws.send("⚙️SERVER: Welcome! You are now connected to the WebSocket server.");
 
   ws.on("close", () => {

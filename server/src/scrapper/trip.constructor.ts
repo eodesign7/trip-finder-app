@@ -1,17 +1,16 @@
 import * as cheerio from "cheerio";
-import type { TripOption, TripSegment } from "../../../types";
+import type { TripOption } from "../../../types";
 
 export function parseTripsFromHtml(html: string, today: string): TripOption[] {
   const $ = cheerio.load(html);
   const trips: TripOption[] = [];
-  let skipped = 0;
   // --- NOVÁ LOGIKA POROVNÁVANIA DÁTUMOV ---
   // today môže byť "2025-05-18" alebo "18.5.2025" alebo "18.5." atď.
   // Extrahuj d.M. z today
   let todayShort = today;
   if (/^\d{4}-\d{2}-\d{2}$/.test(today)) {
-    const [y, m, d] = today.split("-");
-    todayShort = `${parseInt(d, 10)}.${parseInt(m, 10)}.`;
+    const [, , d] = today.split("-");
+    todayShort = `${parseInt(d, 10)}.${parseInt(today.split("-")[1], 10)}.`;
   } else if (/^\d{1,2}\.\d{1,2}\./.test(today)) {
     todayShort = today.match(/\d{1,2}\.\d{1,2}\./)?.[0] || today;
   }
@@ -20,24 +19,11 @@ export function parseTripsFromHtml(html: string, today: string): TripOption[] {
     const dateAfter = $(el).find(".date-after").text().trim();
     const dateOnly = dateAfter.match(/\d{1,2}\.\d{1,2}\./)?.[0] || dateAfter;
     if (dateOnly !== todayShort) {
-      console.log(
-        `[constructor] Trip #${
-          i + 1
-        } preskočený, nie je na dnešný dátum (${dateAfter} != ${todayShort})`
-      );
-      skipped++;
       return;
     }
     // Čas odchodu
     const head = $(el).find(".connection-head");
-    const departureTime = head
-      .find("h2.reset.date")
-      .clone()
-      .children()
-      .remove()
-      .end()
-      .text()
-      .trim();
+    head.find("h2.reset.date").clone().children().remove().end().text().trim();
     // Celkový čas
     const totalDurationText = head.find(".total strong").text().trim();
     let duration = 0;
@@ -172,14 +158,6 @@ export function parseTripsFromHtml(html: string, today: string): TripOption[] {
         };
       })
       .get();
-    // Log
-    console.log(
-      `[constructor] Trip #${
-        i + 1
-      } pridaný: ${departureTime} ${firstStation} → ${lastTime} ${lastStation}, duration: ${duration}min, segments: ${
-        segments.length
-      }, price: ${price}`
-    );
     trips.push({
       from: { time: firstTime, station: firstStation, city: "" },
       to: { time: lastTime, station: lastStation, city: "" },
@@ -191,8 +169,5 @@ export function parseTripsFromHtml(html: string, today: string): TripOption[] {
       date: dateAfter,
     });
   });
-  console.log(
-    `[constructor] Celkovo nájdených tripov: ${trips.length}, preskočených: ${skipped}`
-  );
   return trips;
 }
