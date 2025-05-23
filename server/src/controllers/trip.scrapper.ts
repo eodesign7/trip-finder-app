@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { sendTripScoringRequest } from "../lib/openai";
 import { getCpHtmlDynamic } from "../scrapper/trip.getter";
 import { parseTripsFromHtml } from "../scrapper/trip.constructor";
-import type { TripOption } from "../../../types";
+import type { TripOption } from "../../types";
 import { buildCpSmartLink } from "../scrapper/url-constructor";
 import { formatTodayForConstructor } from "../scrapper/date-helpers";
 import { logStep } from "../lib/helpers";

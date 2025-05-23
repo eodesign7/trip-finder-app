@@ -1,5 +1,5 @@
 import * as cheerio from "cheerio";
-import type { TripOption } from "../../../types";
+import type { TripOption } from "../../types";
 
 export function parseTripsFromHtml(html: string, today: string): TripOption[] {
   const $ = cheerio.load(html);

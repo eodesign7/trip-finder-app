@@ -1,4 +1,4 @@
-import type { TripOption } from "../../../types";
+import type { TripOption } from "../../types";
 
 export type TripUserInput = {
   from: string;
