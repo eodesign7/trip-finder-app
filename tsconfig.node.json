@@ -21,7 +21,12 @@
     "noUncheckedSideEffectImports": true,
 
     "forceConsistentCasingInFileNames": true,
-    "composite": true
+    "composite": true,
+    "declaration": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "ES2017",
+    "jsx": "react-jsx"
   },
   "include": ["vite.config.ts"]
 }

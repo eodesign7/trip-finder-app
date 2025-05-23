@@ -1,7 +1,7 @@
 import "./App.css";
 import TripResults from "@/components/TripResults";
 import { useState } from "react";
-import type { TripOption, TripAiScore } from "types";
+import type { TripOption, TripAiScore } from "#/types";
 import SearchForm from "./components/search/SearchForm";
 import LogPanel from "./components/LogPanel";
 import { DayPickerProvider } from "react-day-picker";

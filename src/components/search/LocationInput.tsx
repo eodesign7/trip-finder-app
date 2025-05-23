@@ -62,7 +62,6 @@ export default function LocationInput({
     debounceTimeout.current = setTimeout(() => {
       fetchSuggestions(value);
     }, 400);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
   async function fetchSuggestions(query: string) {

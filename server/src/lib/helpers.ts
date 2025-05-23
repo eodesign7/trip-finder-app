@@ -17,7 +17,7 @@ export function logToAllClients(message: string) {
 export function logStep(
   message: string,
   status: number = 200,
-  extra?: Record<string, any>
+  extra?: Record<string, unknown>
 ) {
   logToAllClients(
     JSON.stringify({

@@ -24,7 +24,7 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import type { TripAiScore, TripOption } from "types";
+import type { TripAiScore, TripOption } from "#/types";
 import TimePicker from "@/components/ui/TimePicker";
 import { getCurrentLocation } from "@/utils/location";
 import LocationInput from "@/components/search/LocationInput";

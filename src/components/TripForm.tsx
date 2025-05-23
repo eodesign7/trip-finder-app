@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import LogPanel from "@/components/LogPanel";
-import type { TripOption } from "types";
+import type { TripOption } from "#/types";
 
 const tripFormSchema = z.object({
   from: z.string().min(2, "Enter at least 2 characters"),

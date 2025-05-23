@@ -147,4 +147,38 @@
 - [x] Z výsledku zistiť provider: "FlixBus", "ZSSK", "RegioJet"
 
 ---
+
+## 🔹 Fáza 7 – Deploy (Vercel + Render/Railway/Fly.io)
+
+- [ ] **FE (Vercel):**
+
+  - [ ] Deployni frontend (React/Vite) do rootu repa na Vercel.
+  - [ ] Skontroluj, že Vercel rozpozná FE build (vite.config.js, package.json scripts).
+  - [ ] Pridaj/verifikuj `vercel.json` ak treba custom build alebo rewrites.
+  - [ ] Nastav `.env` v root FE s URL na backend (napr. `VITE_API_URL=https://trip-finder-backend.onrender.com`).
+  - [ ] Otestuj, že FE volá správne endpointy na BE (aj WebSocket endpoint).
+
+- [ ] **BE (Render/Railway/Fly.io):**
+
+  - [ ] Deployni celý `/server` folder na Render/Railway/Fly.io ako Node.js app.
+  - [ ] Skontroluj, že Puppeteer funguje (Render/Railway/Fly.io to podporujú, Heroku nie vždy).
+  - [ ] Nastav CORS na FE doménu z Vercelu (aby FE mohol volať BE endpointy a WebSocket).
+  - [ ] Pridaj všetky potrebné env premenné (OpenAI key, PORT, atď.).
+  - [ ] Otestuj, že WebSocket endpoint funguje (log panel na FE sa pripája).
+
+- [ ] **Komunikácia FE ↔ BE:**
+
+  - [ ] FE volá BE cez HTTP(S) a WebSocket na správnu doménu (z .env).
+  - [ ] Otestuj všetky flows: vyhľadávanie, logovanie, fallbacky, AI scoring.
+
+- [ ] **Dokumentácia a README:**
+
+  - [ ] Doplň README s návodom na deploy FE (Vercel) a BE (Render/Railway/Fly.io).
+  - [ ] Pridaj info o potrebných env variables a doménach.
+
+- [ ] **Finálny test:**
+  - [ ] Otestuj appku na produkčných doménach (FE aj BE).
+  - [ ] Skontroluj, že všetko funguje (aj fallbacky, error handling, AI scoring, log panel).
+
+---
 ```

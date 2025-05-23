@@ -2,7 +2,7 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { extractCity } from "@/utils/extractCity";
 import { toast } from "@/hooks/use-toast";
-import type { TripOption, TripAiScore } from "types";
+import type { TripOption, TripAiScore } from "#/types";
 
 interface UseTripSearchProps {
   from: string;

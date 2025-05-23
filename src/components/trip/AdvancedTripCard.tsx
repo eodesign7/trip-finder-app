@@ -12,7 +12,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import type { TripOption, TripSegment } from "../../../types";
+import type { TripOption, TripSegment } from "#/types";
 
 type AdvancedTripCardProps = {
   trip: TripOption;
@@ -20,7 +20,7 @@ type AdvancedTripCardProps = {
 };
 
 export default function AdvancedTripCard({ trip }: AdvancedTripCardProps) {
-  const [isExpanded, setIsExpanded] = React.useState(true);
+  const [isExpanded, setIsExpanded] = React.useState(false);
   const { from, to, duration, segments, price, totalPrice, date } = trip;
 
   // Helper na formátovanie času (minúty na h:mm)

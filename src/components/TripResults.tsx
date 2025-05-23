@@ -1,6 +1,6 @@
 import AdvancedTripCard from "@/components/trip/AdvancedTripCard";
 import { Loader2 } from "lucide-react";
-import type { TripResultsProps } from "types";
+import type { TripResultsProps } from "#/types";
 
 export default function TripResults({
   trips,
@@ -34,7 +34,7 @@ export default function TripResults({
     );
   }
   return (
-    <div className="w-full max-w-5xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="w-full max-w-5xl mx-auto mt-8 grid grid-cols-1 gap-6">
       {trips.map((trip, i) => {
         const score = aiScores?.find((s) => s.index === i);
         return (

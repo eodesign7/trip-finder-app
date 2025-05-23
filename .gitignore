@@ -37,3 +37,7 @@ build/
 
 # Docs
 .docs/*
+
+# Build output
+/dist/
+/build/

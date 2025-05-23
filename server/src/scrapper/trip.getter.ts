@@ -82,14 +82,10 @@ export async function getCpHtmlFixed() {
   const prices = await page.evaluate(() => {
     return Array.from(
       document.querySelectorAll(".box.connection.detail-box")
-    ).map((box, i) => {
+    ).map((box) => {
       const priceEl = box.querySelector(".price-value");
       const priceText =
         priceEl?.textContent?.replace(/\s+/g, " ").trim() || null;
-      if (!priceText) {
-        // eslint-disable-next-line no-console
-        // logStep(`[getter] [Trip #${i + 1}] Cena nebola nájdená!`); // voliteľné warningy
-      }
       return priceText;
     });
   });
@@ -203,14 +199,10 @@ export async function getCpHtmlDynamic({
   const prices = await page.evaluate(() => {
     return Array.from(
       document.querySelectorAll(".box.connection.detail-box")
-    ).map((box, i) => {
+    ).map((box) => {
       const priceEl = box.querySelector(".price-value");
       const priceText =
         priceEl?.textContent?.replace(/\s+/g, " ").trim() || null;
-      if (!priceText) {
-        // eslint-disable-next-line no-console
-        // logStep(`[getter] [Trip #${i + 1}] Cena nebola nájdená!`); // voliteľné warningy
-      }
       return priceText;
     });
   });

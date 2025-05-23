@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "ts-node-dev src/index.ts"
+    "server": "ts-node-dev src/index.ts",
+    "type-check": "tsc --noEmit"
   },
   "keywords": [],
   "author": "",
