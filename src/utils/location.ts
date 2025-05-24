@@ -33,7 +33,7 @@ export async function getCurrentLocation(
         setIsDetectingLocation(false);
       }
     },
-    (error: unknown) => {
+    () => {
       // alert("Unable to determine your current location");
       setIsDetectingLocation(false);
     }
