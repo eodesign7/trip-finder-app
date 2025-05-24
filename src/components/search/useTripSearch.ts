@@ -18,6 +18,7 @@ interface UseTripSearchProps {
 
 export function useTripSearch() {
   const [isLoading, setLocalLoading] = useState(false);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   async function handleSearch(
     {
@@ -61,7 +62,7 @@ export function useTripSearch() {
     setLocalLoading(true);
     setIsLoading(true);
     try {
-      const res = await fetch("http://localhost:3001/trip/search", {
+      const res = await fetch(`${apiUrl}/trip/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

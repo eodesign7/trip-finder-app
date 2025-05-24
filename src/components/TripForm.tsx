@@ -36,6 +36,8 @@ export default function TripForm({ setTrips }: TripFormProps) {
   const [travelerOpen, setTravelerOpen] = useState(false);
   const [cpLink, setCpLink] = useState<string | null>(null);
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrors({});
@@ -81,7 +83,7 @@ export default function TripForm({ setTrips }: TripFormProps) {
       );
 
       // Voláme nový endpoint na scraping cp.sk
-      const res = await fetch("http://localhost:3001/trip/cp-scrape", {
+      const res = await fetch(`${apiUrl}/trip/cp-scrape`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
