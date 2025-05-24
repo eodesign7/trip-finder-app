@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 
 export function useWebSocket() {
   const [logs, setLogs] = useState<string[]>([]);
+  const wsUrl = import.meta.env.VITE_WS_URL || "ws://localhost:3001";
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:3001");
+    const socket = new WebSocket(wsUrl);
 
     socket.onmessage = (event) => {
       const data = event.data;
@@ -28,7 +29,7 @@ export function useWebSocket() {
     return () => {
       socket.close();
     };
-  }, []);
+  }, [wsUrl]);
 
   return logs;
 }

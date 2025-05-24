@@ -18,16 +18,17 @@ export default function LogPanel() {
   const [logs, setLogs] = useState<string[]>([]);
   const ws = useRef<WebSocket | null>(null);
   const logEndRef = useRef<HTMLDivElement | null>(null);
+  const wsUrl = import.meta.env.VITE_WS_URL || "ws://localhost:3001";
 
   useEffect(() => {
-    ws.current = new WebSocket("ws://localhost:3001");
+    ws.current = new WebSocket(wsUrl);
     ws.current.onmessage = (event) => {
       setLogs((prev) => [...prev, event.data]);
     };
     return () => {
       ws.current?.close();
     };
-  }, []);
+  }, [wsUrl]);
 
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: "smooth" });

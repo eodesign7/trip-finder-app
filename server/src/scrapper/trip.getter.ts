@@ -5,7 +5,10 @@ export async function getCpHtmlFixed() {
   const url =
     "https://cp.sk/vlakbus/spojenie/vysledky/?f=Dubn%C3%ADk&fc=1&t=Bratislava&tc=1";
   logStep(`[getter] Otváram fixnú stránku: ${url}`);
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "networkidle2" });
 
@@ -122,7 +125,10 @@ export async function getCpHtmlDynamic({
     from
   )}&t=${encodeCp(to)}&date=${formatDateForCp(date)}&time=${time}&submit=true`;
   logStep(`[getter] Otváram dynamickú stránku: ${url}`);
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+  });
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "networkidle2" });
 
