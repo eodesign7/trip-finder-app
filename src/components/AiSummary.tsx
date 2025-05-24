@@ -1,9 +1,3 @@
-import React from "react";
-
-type AiSummaryProps = {
-  aiSummary: string;
-};
-
 export default function AiSummary({ aiSummary }: AiSummaryProps) {
   if (!aiSummary) return null;
   return (
@@ -11,4 +5,4 @@ export default function AiSummary({ aiSummary }: AiSummaryProps) {
       <strong>AI odporúčanie:</strong> {aiSummary}
     </div>
   );
-} 
+}
