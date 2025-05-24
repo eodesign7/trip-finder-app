@@ -128,9 +128,10 @@ export async function getCpHtmlDynamic({
   const browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    protocolTimeout: 120000,
   });
   const page = await browser.newPage();
-  await page.goto(url, { waitUntil: "networkidle2" });
+  await page.goto(url, { waitUntil: "networkidle2", timeout: 120000 });
 
   logStep("[getter] Čakám na načítanie cien (retry-loop, max 10 sekúnd)...");
   let tries = 0;
