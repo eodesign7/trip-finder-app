@@ -1,3 +1,7 @@
+type AiSummaryProps = {
+  aiSummary: string;
+};
+
 export default function AiSummary({ aiSummary }: AiSummaryProps) {
   if (!aiSummary) return null;
   return (
