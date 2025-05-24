@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { extractCity } from "@/utils/extractCity";
-import { toast } from "@/hooks/use-toast";
 import type { TripOption, TripAiScore } from "#/types";
 
 interface UseTripSearchProps {
@@ -39,12 +38,7 @@ export function useTripSearch() {
     setHasSearched(true);
 
     if (!from || !to || !date) {
-      toast({
-        title: "Missing information",
-        description:
-          "Please fill in all required fields (From, To, Date, Time)",
-        variant: "destructive",
-      });
+      // alert("Please fill in all required fields (From, To, Date, Time)");
       return;
     }
 
@@ -85,14 +79,7 @@ export function useTripSearch() {
           data.ai?.summary || data.message || "Žiadne spoje nenájdené."
         );
         setAiScores([]);
-        toast({
-          title: "Žiadne spoje nenájdené",
-          description:
-            data.ai?.summary ||
-            data.message ||
-            "Na zvolený dátum a čas nie sú dostupné žiadne spoje. Skús iný čas alebo deň.",
-          variant: "destructive",
-        });
+        // alert("Žiadne spoje nenájdené");
         return;
       }
       if (!res.ok) {
@@ -102,15 +89,7 @@ export function useTripSearch() {
       setAiSummary(data.ai?.summary || "");
       setAiScores(data.ai?.scores || []);
     } catch (error: unknown) {
-      let description = "Unable to fetch trips";
-      if (error && typeof error === "object" && "message" in error) {
-        description = String((error as { message?: string }).message);
-      }
-      toast({
-        title: "Trip search failed",
-        description,
-        variant: "destructive",
-      });
+      // alert("Unable to fetch trips");
     } finally {
       setLocalLoading(false);
       setIsLoading(false);

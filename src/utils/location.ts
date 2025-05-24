@@ -1,20 +1,9 @@
-type ToastFn = (opts: {
-  title: string;
-  description: string;
-  variant: string;
-}) => void;
-
 export async function getCurrentLocation(
   setFrom: (val: string) => void,
-  setIsDetectingLocation: (val: boolean) => void,
-  toast: ToastFn
+  setIsDetectingLocation: (val: boolean) => void
 ) {
   if (!navigator.geolocation) {
-    toast({
-      title: "Geolocation not supported",
-      description: "Your browser doesn't support location detection",
-      variant: "destructive",
-    });
+    // alert("Your browser doesn't support location detection");
     return;
   }
 
@@ -37,36 +26,15 @@ export async function getCurrentLocation(
           data.municipality ||
           "";
         setFrom(city);
-
-        toast({
-          title: "Location detected",
-          description: `Found your location: ${city}`,
-          variant: "default",
-        });
+        // alert(`Found your location: ${city}`);
       } catch (error: unknown) {
-        let description = "Unable to determine your current location";
-        if (error && typeof error === "object" && "message" in error) {
-          description = String((error as { message?: string }).message);
-        }
-        toast({
-          title: "Location detection failed",
-          description: description,
-          variant: "destructive",
-        });
+        // alert("Unable to determine your current location");
       } finally {
         setIsDetectingLocation(false);
       }
     },
     (error: unknown) => {
-      let description = "Unable to determine your current location";
-      if (error && typeof error === "object" && "message" in error) {
-        description = String((error as { message?: string }).message);
-      }
-      toast({
-        title: "Location access denied",
-        description: description,
-        variant: "destructive",
-      });
+      // alert("Unable to determine your current location");
       setIsDetectingLocation(false);
     }
   );

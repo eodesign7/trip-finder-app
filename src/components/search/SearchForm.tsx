@@ -23,7 +23,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/hooks/use-toast";
 import type { TripAiScore, TripOption } from "#/types";
 import TimePicker from "@/components/ui/TimePicker";
 import { getCurrentLocation } from "@/utils/location";
@@ -96,11 +95,7 @@ export default function SearchForm({
                     <span
                       onClick={() =>
                         !isDetectingLocation &&
-                        getCurrentLocation(
-                          setFrom,
-                          setIsDetectingLocation,
-                          toast
-                        )
+                        getCurrentLocation(setFrom, setIsDetectingLocation)
                       }
                       title="Zisti moju polohu"
                       className={
