@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export function useWebSocket() {
   const [logs, setLogs] = useState<string[]>([]);
-  const wsUrl = import.meta.env.VITE_WS_URL || "ws://localhost:3001";
+  const wsUrl = import.meta.env.VITE_WS_URL || "wss://trip-finder-app.onrender.com";
 
   useEffect(() => {
     const socket = new WebSocket(wsUrl);

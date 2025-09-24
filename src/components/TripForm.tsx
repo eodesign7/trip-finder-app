@@ -36,7 +36,7 @@ export default function TripForm({ setTrips }: TripFormProps) {
   const [travelerOpen, setTravelerOpen] = useState(false);
   const [cpLink, setCpLink] = useState<string | null>(null);
 
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_API_URL || 'https://trip-finder-app.onrender.com';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

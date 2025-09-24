@@ -18,7 +18,8 @@ interface UseTripSearchProps {
 
 export function useTripSearch() {
   const [isLoading, setLocalLoading] = useState(false);
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl =
+    import.meta.env.VITE_API_URL || "https://trip-finder-app.onrender.com";
 
   async function handleSearch(
     {

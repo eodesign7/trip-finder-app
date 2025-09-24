@@ -18,7 +18,7 @@ export default function LogPanel() {
   const [logs, setLogs] = useState<string[]>([]);
   const ws = useRef<WebSocket | null>(null);
   const logEndRef = useRef<HTMLDivElement | null>(null);
-  const wsUrl = import.meta.env.VITE_WS_URL || "ws://localhost:3001";
+  const wsUrl = import.meta.env.VITE_WS_URL || "wss://trip-finder-app.onrender.com";
 
   useEffect(() => {
     ws.current = new WebSocket(wsUrl);
