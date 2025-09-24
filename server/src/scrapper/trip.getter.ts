@@ -7,7 +7,16 @@ export async function getCpHtmlFixed() {
   logStep(`[getter] Otváram fixnú stránku: ${url}`);
   const browser = await puppeteer.launch({
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-accelerated-2d-canvas",
+      "--no-first-run",
+      "--no-zygote",
+      "--single-process",
+      "--disable-gpu"
+    ],
   });
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: "networkidle2" });
@@ -127,7 +136,16 @@ export async function getCpHtmlDynamic({
   logStep(`[getter] Otváram dynamickú stránku: ${url}`);
   const browser = await puppeteer.launch({
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-accelerated-2d-canvas",
+      "--no-first-run",
+      "--no-zygote",
+      "--single-process",
+      "--disable-gpu"
+    ],
     protocolTimeout: 120000,
   });
   const page = await browser.newPage();

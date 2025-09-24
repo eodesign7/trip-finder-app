@@ -62,7 +62,12 @@ export async function tripCpScrapeController(req: Request, res: Response) {
     // --- AI Scoring & Summary ---
     logStep("[tripCpScrapeController] AI scoring...");
     try {
-      aiResult = await sendTripScoringRequest(req.body, trips);
+      if (process.env.OPENAI_API_KEY) {
+        aiResult = await sendTripScoringRequest(req.body, trips);
+      } else {
+        logStep("[tripCpScrapeController] OPENAI_API_KEY nie je nastavený, preskakujem AI scoring");
+        aiResult = { scores: [], summary: "AI scoring nie je dostupný." };
+      }
     } catch (err) {
       console.log("[OpenAI] ERROR:", err);
       aiResult = { scores: [], summary: "AI scoring sa nepodaril." };
